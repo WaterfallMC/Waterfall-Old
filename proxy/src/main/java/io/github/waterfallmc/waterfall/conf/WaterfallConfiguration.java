@@ -1,11 +1,14 @@
 package io.github.waterfallmc.waterfall.conf;
 
+import lombok.*;
+
 import java.io.File;
 import java.util.concurrent.TimeUnit;
 
 import net.md_5.bungee.conf.Configuration;
 import net.md_5.bungee.conf.YamlConfig;
 
+@Getter
 public class WaterfallConfiguration extends Configuration {
 
     /*
@@ -29,6 +32,13 @@ public class WaterfallConfiguration extends Configuration {
      */
     private int joinThrottle = (int) TimeUnit.MILLISECONDS.convert(4, TimeUnit.SECONDS);
 
+    /**
+     * If metrics is enabled
+     * <p>
+     * Default is true (enabled)
+     */
+    private boolean metrics = true;
+
     @Override
     public void load() {
         super.load();
@@ -37,15 +47,6 @@ public class WaterfallConfiguration extends Configuration {
         // Throttling options
         tabThrottle = config.getInt("throttling.tab_complete", tabThrottle);
         joinThrottle = config.getInt("throttling.join", joinThrottle);
-    }
-
-    @Override
-    public long getTabThrottle() {
-        return tabThrottle;
-    }
-
-    @Override
-    public long getJoinThrottle() {
-        return joinThrottle;
+        metrics = config.getBoolean("metrics", metrics);
     }
 }

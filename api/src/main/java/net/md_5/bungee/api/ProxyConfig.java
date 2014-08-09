@@ -99,4 +99,9 @@ public interface ProxyConfig
      * How often players can join 
      */
     long getJoinThrottle();
+
+    /**
+     * If metrics is enabled
+     */
+    boolean isMetrics();
 }

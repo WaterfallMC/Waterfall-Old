@@ -79,4 +79,17 @@ public interface ProxyConfig
      * The favicon used for the server ping list.
      */
     Favicon getFaviconObject();
+
+    //
+    // Waterfall Options
+    //
+
+    // Throttling options
+
+    /**
+     * How often tab-complete packets can be sent.
+     * <p/>
+     * Values in milliseconds.
+     */
+    int getTabThrottle();
 }

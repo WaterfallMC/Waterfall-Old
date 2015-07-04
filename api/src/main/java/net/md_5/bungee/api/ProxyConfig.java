@@ -88,4 +88,13 @@ public interface ProxyConfig
      * If metrics is enabled
      */
     boolean isMetrics();
+
+    // Throttling options
+
+    /**
+     * How often tab-complete packets can be sent.
+     * <p/>
+     * Values in milliseconds.
+     */
+    int getTabThrottle();
 }

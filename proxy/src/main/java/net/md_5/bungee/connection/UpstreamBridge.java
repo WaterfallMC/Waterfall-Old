@@ -31,6 +31,8 @@ public class UpstreamBridge extends PacketHandler
     private final ProxyServer bungee;
     private final UserConnection con;
 
+    private long lastTabCompletion = -1;
+
     public UpstreamBridge(ProxyServer bungee, UserConnection con)
     {
         this.bungee = bungee;
@@ -121,6 +123,16 @@ public class UpstreamBridge extends PacketHandler
     @Override
     public void handle(TabCompleteRequest tabComplete) throws Exception
     {
+        if ( bungee.getConfig().getTabThrottle() > 0 )
+        {
+            long now = System.currentTimeMillis();
+            if ( lastTabCompletion > 0 && (now - lastTabCompletion) <= bungee.getConfig().getTabThrottle() )
+            {
+                throw CancelSendSignal.INSTANCE;
+            }
+            lastTabCompletion = now;
+        }
+
         List<String> suggestions = new ArrayList<>();
 
         if ( tabComplete.getCursor().startsWith( "/" ) )

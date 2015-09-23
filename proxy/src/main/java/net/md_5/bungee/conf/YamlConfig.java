@@ -72,10 +72,10 @@ public class YamlConfig implements ConfigurationAdapter
 
             if ( config == null )
             {
-                config = new CaseInsensitiveMap();
+                config = new CaseInsensitiveMap<>();
             } else
             {
-                config = new CaseInsensitiveMap( config );
+                config = new CaseInsensitiveMap<>( config );
             }
         } catch ( IOException ex )
         {
@@ -237,7 +237,6 @@ public class YamlConfig implements ConfigurationAdapter
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Collection<String> getGroups(String player)
     {
         Collection<String> groups = get( "groups." + player, null );
@@ -247,16 +246,15 @@ public class YamlConfig implements ConfigurationAdapter
     }
 
     @Override
-    public Collection<?> getList(String path, Collection<?> def)
+    public <T> Collection<T> getList(String path, Collection<T> def)
     {
         return get( path, def );
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Collection<String> getPermissions(String group)
     {
         Collection<String> permissions = get( "permissions." + group, null );
-        return ( permissions == null ) ? Collections.EMPTY_SET : permissions;
+        return ( permissions == null ) ? Collections.<String>emptySet() : permissions;
     }
 }

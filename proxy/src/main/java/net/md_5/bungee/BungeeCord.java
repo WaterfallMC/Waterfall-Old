@@ -466,13 +466,12 @@ public class BungeeCord extends ProxyServer
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Collection<ProxiedPlayer> getPlayers()
     {
         connectionLock.readLock().lock();
         try
         {
-            return Collections.unmodifiableCollection( new HashSet( connections.values() ) );
+            return Collections.unmodifiableCollection( new HashSet<ProxiedPlayer>( connections.values() ) );
         } finally
         {
             connectionLock.readLock().unlock();

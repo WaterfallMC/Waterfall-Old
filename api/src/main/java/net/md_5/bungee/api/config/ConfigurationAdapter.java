@@ -50,7 +50,7 @@ public interface ConfigurationAdapter
      * @param def the default value
      * @return the retrieved list
      */
-    public Collection<?> getList(String path, Collection<?> def);
+    public <T> Collection<T> getList(String path, Collection<T> def);
 
     /**
      * Get the configuration all servers which may be accessible via the proxy.

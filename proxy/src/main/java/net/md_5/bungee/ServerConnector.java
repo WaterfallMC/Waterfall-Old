@@ -377,6 +377,6 @@ public class ServerConnector extends PacketHandler
     @Override
     public String toString()
     {
-        return "[" + user.getName() + "] <-> ServerConnector [" + target.getName() + "]";
+        return "[" + user.getName() + "|" + user.getAddress() + "] <-> ServerConnector [" + target.getName() + "]";
     }
 }

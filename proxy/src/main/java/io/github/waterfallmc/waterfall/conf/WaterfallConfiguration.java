@@ -17,6 +17,13 @@ public class WaterfallConfiguration extends Configuration {
      */
     private boolean metrics = true;
 
+    /**
+     * Whether we log server list pings
+     * <p>
+     * Default is false (don't log)
+     */
+    private boolean logServerListPing = false;
+
     /*
      * Throttling options
      * Helps prevent players from overloading the servers behind us
@@ -36,6 +43,7 @@ public class WaterfallConfiguration extends Configuration {
         YamlConfig config = new YamlConfig(new File("waterfall.yml"));
         config.load(false); // Load, but no permissions
         metrics = config.getBoolean("metrics", metrics);
+        logServerListPing = config.getBoolean( "log_server_list_ping", logServerListPing );
         // Throttling options
         tabThrottle = config.getInt("throttling.tab_complete", tabThrottle);
     }
@@ -48,5 +56,10 @@ public class WaterfallConfiguration extends Configuration {
     @Override
     public int getTabThrottle() {
         return tabThrottle;
+    }
+
+    @Override
+    public boolean isLogServerListPing() {
+        return logServerListPing;
     }
 }

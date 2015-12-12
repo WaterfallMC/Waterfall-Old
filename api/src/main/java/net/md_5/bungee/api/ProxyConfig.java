@@ -89,6 +89,11 @@ public interface ProxyConfig
      */
     boolean isMetrics();
 
+    /**
+     * Whether we log server list pings
+     */
+    boolean isLogServerListPing();
+
     // Throttling options
 
     /**

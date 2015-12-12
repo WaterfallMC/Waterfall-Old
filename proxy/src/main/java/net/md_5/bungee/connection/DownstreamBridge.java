@@ -504,6 +504,6 @@ public class DownstreamBridge extends PacketHandler
     @Override
     public String toString()
     {
-        return "[" + con.getName() + "] <-> DownstreamBridge <-> [" + server.getInfo().getName() + "]";
+        return "[" + con.getAddress() + "|" + con.getName() + "] <-> DownstreamBridge <-> [" + server.getInfo().getName() + "]";
     }
 }

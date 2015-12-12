@@ -104,4 +104,9 @@ public interface ProxyConfig
      * If metrics is enabled
      */
     boolean isMetrics();
+
+    /**
+     * Whether we log server list pings
+     */
+    boolean isLogServerListPing();
 }

@@ -38,6 +38,13 @@ public class WaterfallConfiguration extends Configuration {
      */
     private boolean metrics = true;
 
+    /**
+     * Whether we log server list pings
+     * <p>
+     * Default is false (don't log)
+     */
+    private boolean logServerListPing = false;
+
     @Override
     public void load() {
         super.load();
@@ -47,6 +54,7 @@ public class WaterfallConfiguration extends Configuration {
         tabThrottle = config.getInt("throttling.tab_complete", tabThrottle);
         joinThrottle = config.getInt("throttling.join", joinThrottle);
         metrics = config.getBoolean("metrics", metrics);
+        logServerListPing = config.getBoolean( "log_server_list_ping", logServerListPing );
     }
 
     @Override
@@ -62,5 +70,10 @@ public class WaterfallConfiguration extends Configuration {
     @Override
     public boolean isMetrics() {
         return metrics;
+    }
+
+    @Override
+    public boolean isLogServerListPing() {
+        return logServerListPing;
     }
 }

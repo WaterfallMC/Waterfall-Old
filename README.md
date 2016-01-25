@@ -4,7 +4,7 @@ Waterfall is a fork of the well-known [BungeeCord](https://github.com/SpigotMC/B
 
 Waterfall focuses on three main areas:
 
-* **Correctness**: Waterfall aims to make the existing BungeeCord codebase _testable_, that is to ensure proper behavior of the proxy's components to reduce bugs. To an extent, this also allows us to achieve greater stability as well.
+* **Stability**: Waterfall aims to be stable. We will achieve this through making the code base testable and discouraging practices that lead to proxy lag.
 * **Features**: Waterfall aims to include more features than canonical BungeeCord.
 * **Scalability**: Waterfall should be able to handle a large number of concurrent players, given a reasonably modern CPU, memory, and good network connection.
 

@@ -66,8 +66,8 @@
     <properties>
         <build.number>unknown</build.number>
         <netty.version>4.0.33.Final</netty.version>
-        <maven.compiler.source>1.7</maven.compiler.source>
-        <maven.compiler.target>1.7</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -115,31 +115,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>animal-sniffer-maven-plugin</artifactId>
-                <version>1.13</version>
-                <executions>
-                    <execution>
-                        <phase>process-classes</phase>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <ignores>
-                        <ignore>java.lang.ClassLoader</ignore>
-                        <ignore>java.lang.Throwable</ignore>
-                        <ignore>java.util.Locale</ignore>
-                    </ignores>
-                    <signature>
-                        <groupId>org.codehaus.mojo.signature</groupId>
-                        <artifactId>java16</artifactId>
-                        <version>1.1</version>
-                    </signature>
-                </configuration>
             </plugin>
             <!-- OSS Parent 9 uses 2.7, 2.10+ is broken anyway -->
             <plugin>

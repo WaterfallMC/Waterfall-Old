@@ -4,19 +4,19 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>net.md-5</groupId>
-        <artifactId>bungeecord-parent</artifactId>
+        <groupId>io.github.projectwaterfall</groupId>
+        <artifactId>waterfall-parent</artifactId>
         <version>1.8-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>net.md-5</groupId>
-    <artifactId>bungeecord-chat</artifactId>
+    <groupId>io.github.projectwaterfall</groupId>
+    <artifactId>waterfall-chat</artifactId>
     <version>1.8-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>BungeeCord-Chat</name>
-    <description>Minecraft JSON chat API intended for use with BungeeCord</description>
+    <name>Waterfall-Chat</name>
+    <description>Minecraft JSON chat API intended for use with Waterfall</description>
 
     <properties>
         <maven.compiler.source>1.6</maven.compiler.source>

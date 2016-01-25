@@ -4,19 +4,19 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>net.md-5</groupId>
-        <artifactId>bungeecord-parent</artifactId>
+        <groupId>io.github.projectwaterfall</groupId>
+        <artifactId>waterfall-parent</artifactId>
         <version>1.8-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>net.md-5</groupId>
-    <artifactId>bungeecord-config</artifactId>
+    <groupId>io.github.projectwaterfall</groupId>
+    <artifactId>waterfall-config</artifactId>
     <version>1.8-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>BungeeCord-Config</name>
-    <description>Generic java configuration API intended for use with BungeeCord</description>
+    <name>Waterfall-Config</name>
+    <description>Generic java configuration API intended for use with Waterfall</description>
 
     <dependencies>
         <dependency>

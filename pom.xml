@@ -9,18 +9,18 @@
         <version>9</version>
     </parent>
 
-    <groupId>net.md-5</groupId>
-    <artifactId>bungeecord-parent</artifactId>
+    <groupId>io.github.projectwaterfall</groupId>
+    <artifactId>waterfall-parent</artifactId>
     <version>1.8-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>BungeeCord-Parent</name>
-    <description>Parent project for all BungeeCord modules.</description>
-    <url>https://github.com/SpigotMC/BungeeCord</url>
+    <name>Waterfall-Parent</name>
+    <description>Parent project for all Waterfall modules.</description>
+    <url>https://github.com/ProjectWaterfall/Waterfall</url>
     <inceptionYear>2012</inceptionYear>
     <organization>
-        <name>SpigotMC</name>
-        <url>https://github.com/SpigotMC</url>
+        <name>Waterfall</name>
+        <url>https://github.com/ProjectWaterfall</url>
     </organization>
     <licenses>
         <license>
@@ -50,13 +50,13 @@
     </modules>
 
     <scm>
-        <connection>scm:git:git@github.com:SpigotMC/BungeeCord.git</connection>
-        <developerConnection>scm:git:git@github.com:SpigotMC/BungeeCord.git</developerConnection>
-        <url>git@github.com:SpigotMC/BungeeCord.git</url>
+        <connection>scm:git:git@github.com:ProjectWaterfall/Waterfall.git</connection>
+        <developerConnection>scm:git:git@github.com:ProjectWaterfall/Waterfall.git</developerConnection>
+        <url>git@github.com:ProjectWaterfall/Waterfall.git</url>
     </scm>
     <issueManagement>
         <system>GitHub</system>
-        <url>https://github.com/SpigotMC/BungeeCord/issues</url>
+        <url>https://github.com/ProjectWaterfall/Waterfall/issues</url>
     </issueManagement>
     <ciManagement>
         <system>jenkins</system>

@@ -1,5 +1,6 @@
 package net.md_5.bungee.query;
 
+import io.github.projectwaterfall.event.ProxyQueryEvent;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.AddressedEnvelope;
 import io.netty.channel.ChannelHandlerContext;
@@ -8,10 +9,13 @@ import io.netty.channel.socket.DatagramPacket;
 import java.nio.ByteOrder;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ListenerInfo;
@@ -82,19 +86,26 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket>
                 throw new IllegalStateException( "No session!" );
             }
 
+            List<String> players = bungee.getPlayers().stream().map(ProxiedPlayer::getName).collect(Collectors.toList());
+
+            ProxyQueryEvent event = new ProxyQueryEvent(listener.getMotd(), "SMP", "BungeeCord_Proxy", bungee.getOnlineCount(),
+                    listener.getMaxPlayers(), listener.getHost().getPort(), listener.getHost().getHostString(), "MINECRAFT",
+                    players, bungee.getGameVersion());
+            bungee.getPluginManager().callEvent(event);
+
             out.writeByte( 0x00 );
             out.writeInt( sessionId );
 
             if ( in.readableBytes() == 0 )
             {
                 // Short response
-                writeString( out, listener.getMotd() ); // MOTD
-                writeString( out, "SMP" ); // Game Type
-                writeString( out, "BungeeCord_Proxy" ); // World Name
-                writeNumber( out, bungee.getOnlineCount() ); // Online Count
-                writeNumber( out, listener.getMaxPlayers() ); // Max Players
-                writeShort( out, listener.getHost().getPort() ); // Port
-                writeString( out, listener.getHost().getHostString() ); // IP
+                writeString( out, event.getMotd() ); // MOTD
+                writeString( out, event.getGameType() ); // Game Type
+                writeString( out, event.getWorldName() ); // World Name
+                writeNumber( out, event.getOnlinePlayers() ); // Online Count
+                writeNumber( out, event.getMaxPlayers() ); // Max Players
+                writeShort( out, event.getPort() ); // Port
+                writeString( out, event.getAddress() ); // IP
             } else if ( in.readableBytes() == 4 )
             {
                 // Long Response
@@ -104,18 +115,18 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket>
                 } );
                 Map<String, String> data = new LinkedHashMap<>();
 
-                data.put( "hostname", listener.getMotd() );
-                data.put( "gametype", "SMP" );
+                data.put( "hostname", event.getMotd() );
+                data.put( "gametype", event.getGameType() );
                 // Start Extra Info
-                data.put( "game_id", "MINECRAFT" );
-                data.put( "version", bungee.getGameVersion() );
-                data.put( "plugins", "" );
+                data.put( "game_id", event.getGameId() );
+                data.put( "version", event.getVersion() );
+                data.put( "plugins", "" ); // TODO: Allow population?
                 // End Extra Info
-                data.put( "map", "BungeeCord_Proxy" );
-                data.put( "numplayers", Integer.toString( bungee.getOnlineCount() ) );
-                data.put( "maxplayers", Integer.toString( listener.getMaxPlayers() ) );
-                data.put( "hostport", Integer.toString( listener.getHost().getPort() ) );
-                data.put( "hostip", listener.getHost().getHostString() );
+                data.put( "map", event.getWorldName() );
+                data.put( "numplayers", Integer.toString( event.getOnlinePlayers() ) );
+                data.put( "maxplayers", Integer.toString( event.getMaxPlayers() ) );
+                data.put( "hostport", Integer.toString( event.getPort() ) );
+                data.put( "hostip", event.getAddress() );
 
                 for ( Map.Entry<String, String> entry : data.entrySet() )
                 {
@@ -127,10 +138,7 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket>
                 // Padding
                 writeString( out, "\01player_\00" );
                 // Player List
-                for ( ProxiedPlayer p : bungee.getPlayers() )
-                {
-                    writeString( out, p.getName() );
-                }
+                event.getPlayers().stream().forEach(p -> writeString(out, p));
                 out.writeByte( 0x00 ); // Null
             } else
             {

@@ -6,3 +6,4 @@ jdk:
   - oraclejdk8
 notifications:
   email: false
+  irc: "irc.esper.net#waterfall"

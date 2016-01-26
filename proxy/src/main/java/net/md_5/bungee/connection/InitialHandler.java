@@ -3,6 +3,7 @@ package net.md_5.bungee.connection;
 import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 import java.math.BigInteger;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
@@ -298,7 +299,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
         }
     }
 
-    public static final boolean LOG_THROTTLED_JOINS = Boolean.parseBoolean(System.getProperty("waterfall.log_throttled_joins", "false"));
+    public static final boolean LOG_THROTTLED_JOINS = Boolean.parseBoolean(System.getProperty("waterfall.log_throttled_joins", "true"));
 
     @Override
     public void handle(LoginRequest loginRequest) throws Exception
@@ -307,8 +308,13 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          * should only be used if its definitely not a ping / status request
          * otherwise pings after status requests are blocked
          */
-        if (BungeeCord.getInstance().getJoinThrottle().throttle(((InetSocketAddress) ch.getHandle().remoteAddress()).getAddress())) {
+        final InetAddress addresses = ((InetSocketAddress) ch.getHandle().remoteAddress()).getAddress();
+        if (BungeeCord.getInstance().getJoinThrottle().throttle(addresses)) {
+            if (LOG_THROTTLED_JOINS) {
+                BungeeCord.getInstance().getLogger().log(Level.INFO, "{0} at {1} was join-throttled", new Object[]{this.getName(), addresses.getHostAddress()});
+            }
             disconnect(bungee.getTranslation("join_throttle_kick", TimeUnit.MILLISECONDS.toSeconds(BungeeCord.getInstance().getConfig().getJoinThrottle())));
+            return;
         }
         Preconditions.checkState( thisState == State.USERNAME, "Not expecting USERNAME" );
         this.loginRequest = loginRequest;

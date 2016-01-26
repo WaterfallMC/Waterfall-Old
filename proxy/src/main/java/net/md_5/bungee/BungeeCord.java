@@ -145,7 +145,7 @@ public class BungeeCord extends ProxyServer
             .registerTypeAdapter( ServerPing.PlayerInfo.class, new PlayerInfoSerializer( ProtocolConstants.MINECRAFT_1_7_2 ) )
             .registerTypeAdapter( Favicon.class, Favicon.getFaviconTypeAdapter() ).create();
     @Getter
-    private ConnectionThrottle connectionThrottle;
+    private ConnectionThrottle joinThrottle;
     private final ModuleManager moduleManager = new ModuleManager();
 
     
@@ -253,7 +253,7 @@ public class BungeeCord extends ProxyServer
 
         pluginManager.enablePlugins();
 
-        connectionThrottle = new ConnectionThrottle( config.getThrottle() );
+        joinThrottle = new ConnectionThrottle( config.getJoinThrottle() );
         startListeners();
 
         saveThread.scheduleAtFixedRate( new TimerTask()

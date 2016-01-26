@@ -10,7 +10,7 @@ public class ConnectionThrottle
 {
 
     private final Map<InetAddress, Long> throttle = new HashMap<>();
-    private final int throttleTime;
+    private final long throttleTime;
 
     public void unthrottle(InetAddress address)
     {

@@ -59,7 +59,9 @@ public interface ProxyConfig
      * The connection throttle delay.
      */
     @Deprecated
-    int getThrottle();
+    default int getThrottle() {
+        return (int) getJoinThrottle();
+    }
 
     /**
      * Whether the proxy will parse IPs with spigot or not
@@ -91,5 +93,10 @@ public interface ProxyConfig
      * <p/>
      * Values in milliseconds.
      */
-    int getTabThrottle();
+    long getTabThrottle();
+
+    /**
+     * How often players can join 
+     */
+    long getJoinThrottle();
 }

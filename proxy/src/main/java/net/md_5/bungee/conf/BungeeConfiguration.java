@@ -53,7 +53,7 @@ public abstract class BungeeConfiguration implements ProxyConfig
     private boolean logCommands;
     private int playerLimit = -1;
     private Collection<String> disabledCommands;
-    private int throttle = 4000;
+    //private int throttle = 4000;
     private boolean ipForward;
     private Favicon favicon;
     private int compressionThreshold = 256;
@@ -81,7 +81,7 @@ public abstract class BungeeConfiguration implements ProxyConfig
         onlineMode = adapter.getBoolean( "online_mode", onlineMode );
         logCommands = adapter.getBoolean( "log_commands", logCommands );
         playerLimit = adapter.getInt( "player_limit", playerLimit );
-        throttle = adapter.getInt( "connection_throttle", throttle );
+        //throttle = adapter.getInt( "connection_throttle", throttle );
         ipForward = adapter.getBoolean( "ip_forward", ipForward );
         compressionThreshold = adapter.getInt( "network_compression_threshold", compressionThreshold );
 

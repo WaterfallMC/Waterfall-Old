@@ -16,6 +16,9 @@ import com.google.gson.Gson;
 import java.util.concurrent.TimeUnit;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
+import io.netty.channel.local.LocalAddress;
+
 import net.md_5.bungee.*;
 import net.md_5.bungee.api.Callback;
 import net.md_5.bungee.api.ChatColor;
@@ -23,6 +26,7 @@ import net.md_5.bungee.api.Favicon;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ListenerInfo;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -212,7 +216,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                     @Override
                     public void done(ProxyPingEvent pingResult, Throwable error)
                     {
-                        BungeeCord.getInstance().getConnectionThrottle().unthrottle( getAddress().getAddress() );
+                        // Pinging shouldn't reset throttle
+                        //BungeeCord.getInstance().getConnectionThrottle().unthrottle( getAddress().getAddress() );
                         Gson gson = handshake.getProtocolVersion() == ProtocolConstants.MINECRAFT_1_7_2 ? BungeeCord.getInstance().gsonLegacy : BungeeCord.getInstance().gson;
                         unsafe.sendPacket( new StatusResponse( gson.toJson( pingResult.getResponse() ) ) );
                     }
@@ -293,9 +298,18 @@ public class InitialHandler extends PacketHandler implements PendingConnection
         }
     }
 
+    public static final boolean LOG_THROTTLED_JOINS = Boolean.parseBoolean(System.getProperty("waterfall.log_throttled_joins", "false"));
+
     @Override
     public void handle(LoginRequest loginRequest) throws Exception
     {
+        /*
+         * should only be used if its definitely not a ping / status request
+         * otherwise pings after status requests are blocked
+         */
+        if (BungeeCord.getInstance().getJoinThrottle().throttle(((InetSocketAddress) ch.getHandle().remoteAddress()).getAddress())) {
+            disconnect(bungee.getTranslation("join_throttle_kick", TimeUnit.MILLISECONDS.toSeconds(BungeeCord.getInstance().getConfig().getJoinThrottle())));
+        }
         Preconditions.checkState( thisState == State.USERNAME, "Not expecting USERNAME" );
         this.loginRequest = loginRequest;
 

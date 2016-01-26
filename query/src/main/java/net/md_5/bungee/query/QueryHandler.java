@@ -1,6 +1,6 @@
 package net.md_5.bungee.query;
 
-import io.github.projectwaterfall.event.ProxyQueryEvent;
+import io.github.waterfallmc.waterfall.event.ProxyQueryEvent;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.AddressedEnvelope;
 import io.netty.channel.ChannelHandlerContext;

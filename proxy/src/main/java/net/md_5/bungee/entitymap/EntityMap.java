@@ -2,8 +2,9 @@ package net.md_5.bungee.entitymap;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.buffer.ByteBuf;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+
+import lombok.*;
+
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.ProtocolConstants;
 
@@ -58,14 +59,14 @@ public abstract class EntityMap
         }
     }
 
-    public void rewriteServerbound(ByteBuf packet, int oldId, int newId)
+    public final void rewriteServerbound(ByteBuf packet, int oldId, int newId)
     {
-        rewrite( packet, oldId, newId, serverboundInts, serverboundVarInts );
+        rewrite( packet, oldId, newId, ProtocolConstants.Direction.TO_SERVER );
     }
 
-    public void rewriteClientbound(ByteBuf packet, int oldId, int newId)
+    public final void rewriteClientbound(ByteBuf packet, int oldId, int newId)
     {
-        rewrite( packet, oldId, newId, clientboundInts, clientboundVarInts );
+        rewrite( packet, oldId, newId, ProtocolConstants.Direction.TO_CLIENT );
     }
 
     protected static void rewriteInt(ByteBuf packet, int oldId, int newId, int offset)
@@ -97,20 +98,44 @@ public abstract class EntityMap
         }
     }
 
-    // Handles simple packets
-    private static void rewrite(ByteBuf packet, int oldId, int newId, boolean[] ints, boolean[] varints)
-    {
+    private final void rewrite(ByteBuf packet, int oldId, int newId, ProtocolConstants.Direction direction) {
         int readerIndex = packet.readerIndex();
-        int packetId = DefinedPacket.readVarInt( packet );
+        int packetId = DefinedPacket.readVarInt(packet);
         int packetIdLength = packet.readerIndex() - readerIndex;
+        RewriteType rewriteType = getRewriteType(packetId, direction);
+        rewriteInternal(packet, oldId, newId, direction, readerIndex, packetId, packetIdLength, rewriteType);
+        packet.readerIndex(readerIndex); // Reset the reader index
+    }
 
-        if ( ints[ packetId ] )
-        {
+    protected void rewriteInternal(ByteBuf packet, int oldId, int newId, ProtocolConstants.Direction direction, int readerIndex, int packetId, int packetIdLength, RewriteType rewriteType) {
+        switch (rewriteType) {
+            case INT:
             rewriteInt( packet, oldId, newId, readerIndex + packetIdLength );
-        } else if ( varints[ packetId ] )
-        {
+            break;
+            case VARINT:
             rewriteVarInt( packet, oldId, newId, readerIndex + packetIdLength );
+            break;
         }
-        packet.readerIndex( readerIndex );
+    }
+
+    protected final RewriteType getRewriteType(int packetId, ProtocolConstants.Direction direction) {
+        switch (direction) {
+            case TO_CLIENT:
+                if (clientboundInts[packetId]) return RewriteType.INT;
+                else if (clientboundVarInts[packetId]) return RewriteType.VARINT;
+                else return RewriteType.IGNORE;
+            case TO_SERVER:
+                if (serverboundInts[packetId]) return RewriteType.INT;
+                else if (serverboundVarInts[packetId]) return RewriteType.VARINT;
+                else return RewriteType.IGNORE;
+            default:
+                throw new AssertionError("Unknown protocol direction: " + direction.name());
+        }
+    }
+
+    public enum RewriteType {
+        INT,
+        VARINT,
+        IGNORE;
     }
 }

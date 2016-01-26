@@ -6,6 +6,7 @@ import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.connection.LoginResult;
 import net.md_5.bungee.protocol.DefinedPacket;
+import net.md_5.bungee.protocol.ProtocolConstants;
 
 class EntityMap_1_7_6 extends EntityMap_1_7_2
 {
@@ -13,14 +14,23 @@ class EntityMap_1_7_6 extends EntityMap_1_7_2
     static final EntityMap_1_7_6 INSTANCE = new EntityMap_1_7_6();
 
     @Override
+    protected void rewriteInternal(ByteBuf packet, int oldId, int newId, ProtocolConstants.Direction direction, int readerIndex, int packetId, int packetIdLength, RewriteType rewriteType) {
+        super.rewriteInternal(packet, oldId, newId, direction, readerIndex, packetId, packetIdLength, rewriteType);
+        if (direction == ProtocolConstants.Direction.TO_CLIENT) {
+            rewriteClientbound(packet, oldId, newId, readerIndex, packetId, packetIdLength);
+        }
+    }
+
     @SuppressFBWarnings("DLS_DEAD_LOCAL_STORE")
-    public void rewriteClientbound(ByteBuf packet, int oldId, int newId)
+    private void rewriteClientbound(ByteBuf packet, int oldId, int newId, int readerIndex, int packetId, int packetIdLength)
     {
+        /*
         super.rewriteClientbound( packet, oldId, newId );
 
         int readerIndex = packet.readerIndex();
         int packetId = DefinedPacket.readVarInt( packet );
         int packetIdLength = packet.readerIndex() - readerIndex;
+        */
         if ( packetId == 0x0C /* Spawn Player */ )
         {
             DefinedPacket.readVarInt( packet );

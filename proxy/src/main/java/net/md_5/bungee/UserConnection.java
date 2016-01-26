@@ -189,10 +189,10 @@ public final class UserConnection implements ProxiedPlayer
                 Property[] newp = Arrays.copyOf( oldp, oldp.length + 2 );
 
                 // Add a new profile property that specifies that this user is a Forge user.
-                newp[oldp.length - 1] = new Property( ForgeConstants.FML_LOGIN_PROFILE, "true", null );
+                newp[newp.length - 2] = new Property( ForgeConstants.FML_LOGIN_PROFILE, "true", null );
 
                 // If we do not perform the replacement, then the IP Forwarding code in Spigot et. al. will try to split on this prematurely.
-                newp[oldp.length] = new Property( ForgeConstants.EXTRA_DATA, pendingConnection.getExtraDataInHandshake().replaceAll( "\0", "\1"), "" );
+                newp[newp.length - 1] = new Property( ForgeConstants.EXTRA_DATA, pendingConnection.getExtraDataInHandshake().replaceAll( "\0", "\1"), "" );
 
                 // Set the properties in the profile. All done.
                 profile.setProperties( newp );

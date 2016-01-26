@@ -1,4 +1,4 @@
-# Waterfall
+# Waterfall <a href="https://tc.demonwav.com/viewType.html?buildTypeId=Waterfall_Build&guest=1"><img src="https://tc.demonwav.com/app/rest/builds/buildType(id:Waterfall_Build)/statusIcon"/></a>
 
 Waterfall is a fork of the well-known [BungeeCord](https://github.com/SpigotMC/BungeeCord) server teleportation suite.
 

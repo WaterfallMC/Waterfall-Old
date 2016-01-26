@@ -9,7 +9,7 @@
         <version>9</version>
     </parent>
 
-    <groupId>io.github.projectwaterfall</groupId>
+    <groupId>io.github.waterfallmc</groupId>
     <artifactId>waterfall-parent</artifactId>
     <version>1.8-SNAPSHOT</version>
     <packaging>pom</packaging>
@@ -20,7 +20,7 @@
     <inceptionYear>2012</inceptionYear>
     <organization>
         <name>Waterfall</name>
-        <url>https://github.com/ProjectWaterfall</url>
+        <url>https://github.com/WaterfallMC</url>
     </organization>
     <licenses>
         <license>

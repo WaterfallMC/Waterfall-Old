@@ -4,13 +4,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>io.github.projectwaterfall</groupId>
+        <groupId>io.github.waterfallmc</groupId>
         <artifactId>waterfall-parent</artifactId>
         <version>1.8-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>io.github.projectwaterfall</groupId>
+    <groupId>io.github.waterfallmc</groupId>
     <artifactId>waterfall-config</artifactId>
     <version>1.8-SNAPSHOT</version>
     <packaging>jar</packaging>

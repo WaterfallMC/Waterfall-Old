@@ -16,7 +16,7 @@
 
     <name>Waterfall-Parent</name>
     <description>Parent project for all Waterfall modules.</description>
-    <url>https://github.com/ProjectWaterfall/Waterfall</url>
+    <url>https://github.com/WaterfallMC/Waterfall</url>
     <inceptionYear>2012</inceptionYear>
     <organization>
         <name>Waterfall</name>
@@ -50,17 +50,17 @@
     </modules>
 
     <scm>
-        <connection>scm:git:git@github.com:ProjectWaterfall/Waterfall.git</connection>
-        <developerConnection>scm:git:git@github.com:ProjectWaterfall/Waterfall.git</developerConnection>
-        <url>git@github.com:ProjectWaterfall/Waterfall.git</url>
+        <connection>scm:git:git@github.com:WaterfallMC/Waterfall.git</connection>
+        <developerConnection>scm:git:git@github.com:WaterfallMC/Waterfall.git</developerConnection>
+        <url>git@github.com:WaterfallMC/Waterfall.git</url>
     </scm>
     <issueManagement>
         <system>GitHub</system>
-        <url>https://github.com/ProjectWaterfall/Waterfall/issues</url>
+        <url>https://github.com/WaterfallMC/Waterfall/issues</url>
     </issueManagement>
     <ciManagement>
-        <system>jenkins</system>
-        <url>http://ci.md-5.net/job/BungeeCord</url>
+        <system>teamcity</system>
+        <url>https://getwaterfall.xyz/builds/</url>
     </ciManagement>
 
     <properties>

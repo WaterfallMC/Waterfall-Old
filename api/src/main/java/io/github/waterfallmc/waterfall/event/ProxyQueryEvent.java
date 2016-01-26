@@ -1,4 +1,4 @@
-package io.github.projectwaterfall.event;
+package io.github.waterfallmc.waterfall.event;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

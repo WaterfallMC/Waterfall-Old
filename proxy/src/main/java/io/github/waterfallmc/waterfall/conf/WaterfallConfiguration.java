@@ -33,7 +33,7 @@ public class WaterfallConfiguration extends BungeeConfiguration {
     public void load() {
         super.load();
         YamlConfig config = new YamlConfig(new File("waterfall.yml"));
-        config.load();
+        config.load(false); // Load, but no permissions
         // Throttling options
         tabThrottle = config.getInt("throttling.tab_complete", tabThrottle);
         joinThrottle = config.getInt("throttling.join", joinThrottle);

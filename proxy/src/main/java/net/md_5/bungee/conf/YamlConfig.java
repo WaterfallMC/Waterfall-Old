@@ -55,8 +55,11 @@ public class YamlConfig implements ConfigurationAdapter
         yaml = new Yaml( options );
     }
 
-    @Override
-    public void load()
+    public void load() {
+        load(true);
+    }
+
+    public void load(boolean doPermissions)
     {
         try
         {
@@ -79,6 +82,7 @@ public class YamlConfig implements ConfigurationAdapter
             throw new RuntimeException( "Could not load configuration!", ex );
         }
 
+        if (!doPermissions) return;
         Map<String, Object> permissions = get( "permissions", new HashMap<String, Object>() );
         if ( permissions.isEmpty() )
         {

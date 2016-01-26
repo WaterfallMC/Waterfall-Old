@@ -15,7 +15,9 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
-import lombok.RequiredArgsConstructor;
+
+import lombok.*;
+
 import net.md_5.bungee.Util;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
@@ -40,10 +42,14 @@ public class YamlConfig implements ConfigurationAdapter
     }
     private final Yaml yaml;
     private Map config;
-    private final File file = new File( "config.yml" );
+    private final File file;
 
-    public YamlConfig()
-    {
+    public YamlConfig() {
+        this(new File( "config.yml" ));
+    }
+
+    public YamlConfig(File file) {
+        this.file = file;
         DumperOptions options = new DumperOptions();
         options.setDefaultFlowStyle( DumperOptions.FlowStyle.BLOCK );
         yaml = new Yaml( options );

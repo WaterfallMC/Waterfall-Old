@@ -11,7 +11,6 @@ import net.md_5.bungee.api.Favicon;
 import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.Title;
 import net.md_5.bungee.module.ModuleManager;
-import com.google.common.io.ByteStreams;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
@@ -20,6 +19,8 @@ import net.md_5.bungee.scheduler.BungeeScheduler;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.gson.Gson;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+import io.github.waterfallmc.waterfall.conf.WaterfallConfiguration;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelException;
@@ -28,7 +29,7 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.util.ResourceLeakDetector;
-import net.md_5.bungee.conf.Configuration;
+import net.md_5.bungee.conf.BungeeConfiguration;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -52,9 +53,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import jline.UnsupportedTerminal;
+
 import jline.console.ConsoleReader;
-import jline.internal.Log;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.Synchronized;
@@ -96,7 +96,7 @@ public class BungeeCord extends ProxyServer
      * Configuration.
      */
     @Getter
-    public final Configuration config = new Configuration();
+    public final BungeeConfiguration config = new WaterfallConfiguration();
     /**
      * Localization bundle.
      */

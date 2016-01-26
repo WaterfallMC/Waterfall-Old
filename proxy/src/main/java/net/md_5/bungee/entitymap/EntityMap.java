@@ -119,14 +119,15 @@ public abstract class EntityMap
     }
 
     protected final RewriteType getRewriteType(int packetId, ProtocolConstants.Direction direction) {
+        if (packetId < 0) return RewriteType.IGNORE;
         switch (direction) {
             case TO_CLIENT:
-                if (clientboundInts[packetId]) return RewriteType.INT;
-                else if (clientboundVarInts[packetId]) return RewriteType.VARINT;
+                if (packetId < clientboundInts.length && clientboundInts[packetId]) return RewriteType.INT;
+                else if (packetId < clientboundVarInts.length && clientboundVarInts[packetId]) return RewriteType.VARINT;
                 else return RewriteType.IGNORE;
             case TO_SERVER:
-                if (serverboundInts[packetId]) return RewriteType.INT;
-                else if (serverboundVarInts[packetId]) return RewriteType.VARINT;
+                if (packetId < serverboundInts.length && serverboundInts[packetId]) return RewriteType.INT;
+                else if (packetId < serverboundVarInts.length && serverboundVarInts[packetId]) return RewriteType.VARINT;
                 else return RewriteType.IGNORE;
             default:
                 throw new AssertionError("Unknown protocol direction: " + direction.name());

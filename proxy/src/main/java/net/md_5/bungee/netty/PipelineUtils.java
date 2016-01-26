@@ -53,7 +53,7 @@ public class PipelineUtils
             ch.pipeline().addBefore( FRAME_DECODER, LEGACY_DECODER, new LegacyDecoder() );
             ch.pipeline().addAfter( FRAME_DECODER, PACKET_DECODER, new MinecraftDecoder( Protocol.HANDSHAKE, true, ProxyServer.getInstance().getProtocolVersion() ) );
             ch.pipeline().addAfter( FRAME_PREPENDER, PACKET_ENCODER, new MinecraftEncoder( Protocol.HANDSHAKE, true, ProxyServer.getInstance().getProtocolVersion() ) );
-            ch.pipeline().addBefore( FRAME_PREPENDER, LEGACY_KICKER, new KickStringWriter() );
+            ch.pipeline().addBefore( FRAME_PREPENDER, LEGACY_KICKER, PipelineUtils.KICK_STRING_WRITER );
             ch.pipeline().get( HandlerBoss.class ).setHandler( new InitialHandler( BungeeCord.getInstance(), ch.attr( LISTENER ).get() ) );
         }
     };
@@ -69,6 +69,7 @@ public class PipelineUtils
     public static final String FRAME_PREPENDER = "frame-prepender";
     public static final String LEGACY_DECODER = "legacy-decoder";
     public static final String LEGACY_KICKER = "legacy-kick";
+    private static final KickStringWriter KICK_STRING_WRITER = new KickStringWriter();
 
     private static boolean epoll;
 

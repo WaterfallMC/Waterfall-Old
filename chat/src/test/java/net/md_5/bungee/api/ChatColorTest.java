@@ -25,6 +25,9 @@ public class ChatColorTest {
 
         // invalid case
         assertEquals("^ztest", ChatColor.translateAlternateColorCodes('^', "^ztest"));
+
+        // should be left alone
+        assertEquals("test", ChatColor.translateAlternateColorCodes('&', "test"));
     }
 
 }

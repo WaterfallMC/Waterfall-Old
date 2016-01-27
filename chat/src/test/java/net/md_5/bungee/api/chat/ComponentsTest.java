@@ -124,6 +124,26 @@ public class ComponentsTest
         Assert.assertEquals( eventRetention[1].getClickEvent(), testClickEvent );
     }
 
+    @Test
+    public void testBuilderSpecialFormatting()
+    {
+        BaseComponent[] components = new ComponentBuilder( "Hello " )
+                .bold(true).underlined(true).italic(true).strikethrough(true).obfuscated(true)
+                .append("World").underlined(false).strikethrough(false).create();
+
+        Assert.assertTrue( components[0].isBold() );
+        Assert.assertTrue( components[0].isUnderlined() );
+        Assert.assertTrue( components[0].isItalic() );
+        Assert.assertTrue( components[0].isStrikethrough() );
+        Assert.assertTrue( components[0].isObfuscated() );
+
+        Assert.assertTrue( components[1].isBold() );
+        Assert.assertFalse( components[1].isUnderlined() );
+        Assert.assertTrue( components[1].isItalic() );
+        Assert.assertFalse( components[1].isStrikethrough() );
+        Assert.assertTrue( components[1].isObfuscated() );
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void testLoopSimple()
     {

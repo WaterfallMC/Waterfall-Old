@@ -1,10 +1,15 @@
 sudo: false
+env:
+  global:
+    - secure: "ue1sQ/umEA6xX5FhA++PqEEivzi0YisRds/k3jJG32UayB1ST5bndzqK8TFf/GBqhLJF5flkvXPqusI3q5ZCAO917RvdJQwPEplr9NfO8hTkyEiT+BW96d3eqoo9I4PivJjFuyJHuw322sNxomTWwvR+PNOpveMsYr0kxE3K/fKt+a9kjr013IIoBSJRxuhyTdQWwZ/3sF24HFb45sOf8qK10V4phaTBwBT5Q7iojayjDn2ezJ/FjJ0Xh4gQU++NZeK4PqJa/gp9lPNeDT9zT47xW0fscmS0/7ThTGNmwYB77ySZiWuddvo1upbyz0lJpl4PWMH5kOmsyYknMoW9ZPgun6fmltZd4+/qdnbMGNLmdrVesIFt2mMlAC90EqP+LFJ4RBFuM7tbxkHn13ErtOO0+Z0c9ybuzGPuc+CzkgOqbxqABt7BmAFdtHZydkWAr21wqhnZHUyckih92vWbf4KBan1GOU8XIWiRQpE6YQ1f6OCH5yV2FErdPTjdD167rniJYsRWHWe3hjH03DQzEy57NB6p9WNGlf2elYmIr+GhuTgi8G8LuPIN/8oyGiUwo0xKgcIJY6izy2xldh6BnZspwIb41KRe+rUEuSwe4YiBy9a2wcUGK6osr3loADspwa5LNM8kYxi6frWRduQ2tpJVyxMg9EZO4Y6kRGg7M3k="
+    - secure: "a8MkBK3HthwfWtN9/RdzyLb2ungQqEW7iPAWwR3HD52pbDi8BhyOP+ECFOb7K3O8pCMrKkP29JsTnnMIlWrR5nDmMg9HrxYwKE1RCQQkGHVJ06/B7xGOCeYE6Af8j/8RP1sdWgou7Fo9R+0OdlpePBFWxad1uebakYzZKMWsFulHiZsyYjhLGaJtQK3f0LCzae17feGTGolqLjvEUzegrtnHTPxuGOM8tjxDNCbjYboJkDrY6S1WMbJh16nv1WEHquy3QX7e30KcJFD0ikzrosjLTGhEOd7YUoCkw+YR4+y7E0wcdQiIf1G3jXfi4owj2FguVnpSyDRACmkobG/pnfXh/a5WKBzQkYMd4YscTk/eKrJQOXyFpIntH3KSy4Zt45Hcip06nB/PTS1K569kNhr6/MTiN3teQR3Fw70+Phcz8O3kcWSXLewQM6UJR7LIemmjx4v9YE5lRhLrrsUn4SF3GHgHN+UsSqwcGyVC45GZ2f6ZFHABmBA3zgm1YdbaG57tl1ZkPCTAchi4XOOBXr707BG/iz8SnnonuauCrebsS3hg+2vEdTSPxGKYu7ql/XjCCVy1BRvHnsTtIaPD8UFFKLdrhxksJJ+jNokrKGhACrgxBTTfi74Gpm91xA0nhVmkLkK3XOz98drArvWhSL0NhB6FmaELDMB4D3o6UMs="
 language: java
 jdk:
   - oraclejdk8
 cache:
   directories:
   - $HOME/.m2
+script: "if [ ${TRAVIS_PULL_REQUEST} = 'false' ] && [ ${TRAVIS_BRANCH} = 'master' ]; then mvn deploy -P deployment --settings .travis_settings.xml; else mvn test -B; fi"
 notifications:
   email: false
   irc:

@@ -15,7 +15,7 @@
     <version>1.8-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>BungeeCord-Protocol</name>
+    <name>Waterfall-Protocol</name>
     <description>Minimal implementation of the Minecraft protocol for use in Waterfall</description>
 
     <dependencies>

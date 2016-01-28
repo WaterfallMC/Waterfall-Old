@@ -16,14 +16,6 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
     private final boolean server;
     @Setter
     private int protocolVersion;
-    @Setter
-    private boolean supportsForge = false;
-
-    public MinecraftDecoder(Protocol protocol, boolean server, int protocolVersion) {
-        this.protocol = protocol;
-        this.server = server;
-        this.protocolVersion = protocolVersion;
-    }
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception
@@ -35,7 +27,7 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
         {
             int packetId = DefinedPacket.readVarInt( in );
 
-            DefinedPacket packet = prot.createPacket( packetId, supportsForge );
+            DefinedPacket packet = prot.createPacket( packetId );
             if ( packet != null )
             {
                 packet.read( in, prot.getDirection(), protocolVersion );

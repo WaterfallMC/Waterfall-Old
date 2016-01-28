@@ -120,16 +120,9 @@ public enum Protocol
         private final Class<? extends DefinedPacket>[] packetClasses = new Class[ MAX_PACKET_ID ];
         private final Constructor<? extends DefinedPacket>[] packetConstructors = new Constructor[ MAX_PACKET_ID ];
 
-        public boolean hasPacket(int i, boolean supportsForge) {
-            return supportsForge || i >= 0 && i <= MAX_PACKET_ID;
-        }
-
-        public final DefinedPacket createPacket(int id, boolean supportsForge)
+        public final DefinedPacket createPacket(int id)
         {
-            if ( !hasPacket(id, supportsForge) )
-            {
-                throw new BadPacketException( "Packet with id " + id + " outside of range " );
-            }
+            if ( id < 0 || id >= MAX_PACKET_ID ) return null;
 
             Constructor<? extends DefinedPacket> constructor = packetConstructors[id];
             try

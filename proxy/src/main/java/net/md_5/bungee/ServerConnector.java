@@ -156,11 +156,6 @@ public class ServerConnector extends PacketHandler
         ServerConnection server = new ServerConnection( ch, target );
         ServerConnectedEvent event = new ServerConnectedEvent( user, server );
 
-        if (server.isForgeServer() && user.isForgeUser()) {
-            ((MinecraftDecoder) server.getCh().getHandle().pipeline().get(PipelineUtils.PACKET_DECODER)).setSupportsForge(true);
-            ((MinecraftDecoder) user.getCh().getHandle().pipeline().get(PipelineUtils.PACKET_DECODER)).setSupportsForge(true);
-        }
-
         bungee.getPluginManager().callEvent( event );
 
         ch.write( BungeeCord.getInstance().registerChannels() );

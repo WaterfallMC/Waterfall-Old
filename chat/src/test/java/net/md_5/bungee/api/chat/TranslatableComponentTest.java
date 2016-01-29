@@ -20,7 +20,7 @@ public class TranslatableComponentTest {
     public void testDuplicateNullWithDoesntThrowException() {
         TranslatableComponent component = new TranslatableComponent("Test") {
             @Override
-            public List<BaseComponent> getExtra() {
+            public List<BaseComponent> getWith() {
                 return null;
             }
         };

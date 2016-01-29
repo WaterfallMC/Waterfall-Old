@@ -25,7 +25,7 @@ public class ComponentsTest
     }
 
     @Test
-    public void testLegacyConverter()
+    public void testFromLegacyConverter()
     {
         BaseComponent[] test1 = TextComponent.fromLegacyText( ChatColor.AQUA + "Aqua " + ChatColor.RED + ChatColor.BOLD + "RedBold" );
 
@@ -48,6 +48,29 @@ public class ComponentsTest
         Assert.assertNotNull( url2 );
         Assert.assertTrue( url2.getAction() == ClickEvent.Action.OPEN_URL );
         Assert.assertEquals( "http://google.com/test", url2.getValue() );
+
+        BaseComponent[] test3 = TextComponent.fromLegacyText(ChatColor.WHITE + ChatColor.BOLD.toString() + ChatColor.ITALIC + ChatColor.UNDERLINE +
+                ChatColor.STRIKETHROUGH + ChatColor.MAGIC + "Hello world");
+
+        Assert.assertEquals(ChatColor.WHITE, test3[0].getColor());
+        Assert.assertTrue(test3[0].isBold());
+        Assert.assertTrue(test3[0].isItalic());
+        Assert.assertTrue(test3[0].isUnderlined());
+        Assert.assertTrue(test3[0].isStrikethrough());
+        Assert.assertTrue(test3[0].isObfuscated());
+    }
+
+    @Test
+    public void testToLegacyConverter()
+    {
+        TextComponent test1 = new TextComponent("Hello world");
+        test1.setBold(true);
+        test1.setItalic(true);
+        test1.setUnderlined(true);
+        test1.setStrikethrough(true);
+        test1.setObfuscated(true);
+        Assert.assertEquals( ChatColor.WHITE + ChatColor.BOLD.toString() + ChatColor.ITALIC + ChatColor.UNDERLINE +
+                ChatColor.STRIKETHROUGH + ChatColor.MAGIC + "Hello world", test1.toLegacyText() );
     }
 
     @Test
@@ -80,6 +103,28 @@ public class ComponentsTest
         Assert.assertEquals( "Hello World!", BaseComponent.toPlainText( components ) );
         Assert.assertEquals( ChatColor.RED + "Hello " + ChatColor.BLUE + ChatColor.BOLD
                 + "World" + ChatColor.YELLOW + ChatColor.BOLD + "!", BaseComponent.toLegacyText( components ) );
+    }
+
+    @Test
+    public void testBuilderDuplicate()
+    {
+        ComponentBuilder builder1 = new ComponentBuilder( "Hello " ).color( ChatColor.RED ).
+                append( "World" ).bold( true ).color( ChatColor.BLUE ).
+                append( "!" ).color( ChatColor.YELLOW );
+        ComponentBuilder builder2 = new ComponentBuilder( builder1 );
+
+        // TextComponent doesn't implement proper equals() and hashCode().
+        // Until then, this will have to do...
+        BaseComponent[] components1 = builder1.create();
+        BaseComponent[] components2 = builder2.create();
+
+        Assert.assertEquals( "Hello World!", BaseComponent.toPlainText( components1 ) );
+        Assert.assertEquals( ChatColor.RED + "Hello " + ChatColor.BLUE + ChatColor.BOLD
+                + "World" + ChatColor.YELLOW + ChatColor.BOLD + "!", BaseComponent.toLegacyText( components1 ) );
+
+        Assert.assertEquals( "Hello World!", BaseComponent.toPlainText( components2 ) );
+        Assert.assertEquals( ChatColor.RED + "Hello " + ChatColor.BLUE + ChatColor.BOLD
+                + "World" + ChatColor.YELLOW + ChatColor.BOLD + "!", BaseComponent.toLegacyText( components2 ) );
     }
 
     @Test

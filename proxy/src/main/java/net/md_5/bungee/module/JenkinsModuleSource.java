@@ -18,11 +18,12 @@ public class JenkinsModuleSource implements ModuleSource
         System.out.println( "Attempting to Jenkins download module " + module.getName() + " v" + version.getBuild() );
         try
         {
-            URL website = new URL( "https://tc.demonwav.com/guestAuth/repository/download/Waterfall_Build/" + version.getBuild() + "/" + module.getName() + ".jar" );
+            URL website = new URL( "https://ci.getwaterfall.xyz/guestAuth/app/rest/builds/buildType:Waterfall_Build,branch:master,number:" + version.getBuild() + "/artifacts/content/" + module.getName() + ".jar" );
             URLConnection con = website.openConnection();
             // 15 second timeout at various stages
             con.setConnectTimeout( 15000 );
             con.setReadTimeout( 15000 );
+            con.setRequestProperty("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36");
 
             Files.write( ByteStreams.toByteArray( con.getInputStream() ), module.getFile() );
             System.out.println( "Download complete" );

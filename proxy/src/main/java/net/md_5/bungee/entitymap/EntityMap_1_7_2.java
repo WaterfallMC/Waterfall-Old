@@ -42,23 +42,14 @@ class EntityMap_1_7_2 extends EntityMap
     }
 
     @Override
-    protected void rewriteInternal(ByteBuf packet, int oldId, int newId, ProtocolConstants.Direction direction, int readerIndex, int packetId, int packetIdLength, EntityMap.RewriteType rewriteType) {
-        super.rewriteInternal(packet, oldId, newId, direction, readerIndex, packetId, packetIdLength, rewriteType);
-        if (direction == ProtocolConstants.Direction.TO_CLIENT) {
-            rewriteClientbound(packet, oldId, newId, readerIndex, packetId, packetIdLength);
-        }
-    }
-
-    private void rewriteClientbound(ByteBuf packet, int oldId, int newId, int readerIndex, int packetId, int packetIdLength)
+    public void rewriteClientbound(ByteBuf packet, int oldId, int newId)
     {
-        //Special cases
-        /*
         super.rewriteClientbound( packet, oldId, newId );
 
+        //Special cases
         int readerIndex = packet.readerIndex();
         int packetId = DefinedPacket.readVarInt( packet );
         int packetIdLength = packet.readerIndex() - readerIndex;
-        */
         if ( packetId == 0x0D /* Collect Item */ || packetId == 0x1B /* Attach Entity */ )
         {
             rewriteInt( packet, oldId, newId, readerIndex + packetIdLength + 4 );

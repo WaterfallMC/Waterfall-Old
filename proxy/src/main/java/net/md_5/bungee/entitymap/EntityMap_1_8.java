@@ -48,29 +48,15 @@ class EntityMap_1_8 extends EntityMap
     }
 
     @Override
-    protected void rewriteInternal(ByteBuf packet, int oldId, int newId, ProtocolConstants.Direction direction, int readerIndex, int packetId, int packetIdLength, RewriteType rewriteType) {
-        super.rewriteInternal(packet, oldId, newId, direction, readerIndex, packetId, packetIdLength, rewriteType);
-        switch (direction) {
-            case TO_CLIENT:
-                rewriteClientbound(packet, oldId, newId, readerIndex, packetId, packetIdLength);
-                break;
-            case TO_SERVER:
-                rewriteServerbound(packet, oldId, newId, readerIndex, packetId, packetIdLength);
-                break;
-        }
-    }
-
     @SuppressFBWarnings("DLS_DEAD_LOCAL_STORE")
-    private void rewriteClientbound(ByteBuf packet, int oldId, int newId, int readerIndex, int packetId, int packetIdLength)
+    public void rewriteClientbound(ByteBuf packet, int oldId, int newId)
     {
-        /*
         super.rewriteClientbound( packet, oldId, newId );
 
         //Special cases
         int readerIndex = packet.readerIndex();
         int packetId = DefinedPacket.readVarInt( packet );
         int packetIdLength = packet.readerIndex() - readerIndex;
-        */
         if ( packetId == 0x0D /* Collect Item */ )
         {
             DefinedPacket.readVarInt( packet );
@@ -168,15 +154,14 @@ class EntityMap_1_8 extends EntityMap
         packet.readerIndex( readerIndex );
     }
 
-    public void rewriteServerbound(ByteBuf packet, int oldId, int newId, int readerIndex, int packetId, int packetIdLength)
+    @Override
+    public void rewriteServerbound(ByteBuf packet, int oldId, int newId)
     {
-        /*
         super.rewriteServerbound( packet, oldId, newId );
         //Special cases
         int readerIndex = packet.readerIndex();
         int packetId = DefinedPacket.readVarInt( packet );
         int packetIdLength = packet.readerIndex() - readerIndex;
-        */
 
         if ( packetId == 0x18 /* Spectate */ && !BungeeCord.getInstance().getConfig().isIpForward() )
         {

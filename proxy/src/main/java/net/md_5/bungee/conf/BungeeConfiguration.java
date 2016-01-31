@@ -106,7 +106,7 @@ public abstract class BungeeConfiguration implements ProxyConfig
             for ( ServerInfo oldServer : oldServers.values() )
             {
                 ServerInfo newServer = newServers.get(oldServer.getName());
-                if (newServer == null || !oldServer.getAddress().equals(newServer.getAddress())) {
+                if ((newServer == null || !oldServer.getAddress().equals(newServer.getAddress())) && !oldServer.getPlayers().isEmpty()) {
                     BungeeCord.getInstance().getLogger().info("Moving players off of server: " + oldServer.getName());
                     // The server is being removed, or having it's address changed
                     for (ProxiedPlayer player : oldServer.getPlayers()) {

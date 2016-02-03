@@ -1,5 +1,6 @@
 package net.md_5.bungee;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
@@ -30,7 +31,6 @@ import net.md_5.bungee.netty.PacketHandler;
 import net.md_5.bungee.netty.PipelineUtils;
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.MinecraftDecoder;
-import net.md_5.bungee.protocol.MinecraftOutput;
 import net.md_5.bungee.protocol.Protocol;
 import net.md_5.bungee.protocol.ProtocolConstants;
 import net.md_5.bungee.protocol.packet.EncryptionRequest;
@@ -197,9 +197,8 @@ public class ServerConnector extends PacketHandler
 
             if ( user.getPendingConnection().getVersion() < ProtocolConstants.MINECRAFT_1_8 )
             {
-                MinecraftOutput out = new MinecraftOutput();
-                out.writeStringUTF8WithoutLengthHeaderBecauseDinnerboneStuffedUpTheMCBrandPacket( ProxyServer.getInstance().getName() + " (" + ProxyServer.getInstance().getVersion() + ")" );
-                user.unsafe().sendPacket( new PluginMessage( "MC|Brand", out.toArray(), handshakeHandler.isServerForge() ) );
+                user.unsafe().sendPacket( new PluginMessage( "MC|Brand", (bungee.getName() + " (" + bungee.getVersion() + ")").getBytes(Charsets.UTF_8),
+                        handshakeHandler.isServerForge() ) );
             } else
             {
                 ByteBuf brand = ByteBufAllocator.DEFAULT.heapBuffer();

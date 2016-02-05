@@ -29,7 +29,7 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.util.ResourceLeakDetector;
-import net.md_5.bungee.conf.BungeeConfiguration;
+import net.md_5.bungee.conf.Configuration;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -96,7 +96,7 @@ public class BungeeCord extends ProxyServer
      * Configuration.
      */
     @Getter
-    public final BungeeConfiguration config = new WaterfallConfiguration();
+    public final Configuration config = new WaterfallConfiguration();
     /**
      * Localization bundle.
      */

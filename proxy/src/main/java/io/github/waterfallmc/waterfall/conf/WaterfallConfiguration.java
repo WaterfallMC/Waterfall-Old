@@ -3,10 +3,10 @@ package io.github.waterfallmc.waterfall.conf;
 import java.io.File;
 import java.util.concurrent.TimeUnit;
 
-import net.md_5.bungee.conf.BungeeConfiguration;
+import net.md_5.bungee.conf.Configuration;
 import net.md_5.bungee.conf.YamlConfig;
 
-public class WaterfallConfiguration extends BungeeConfiguration {
+public class WaterfallConfiguration extends Configuration {
 
     /*
      * Throttling options

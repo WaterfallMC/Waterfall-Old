@@ -244,10 +244,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
         thisState = State.PING;
     }
 
+    private static final boolean ACCEPT_INVALID_PACKETS = Boolean.parseBoolean(System.getProperty("waterfall.acceptInvalidPackets", "false"));
+
     @Override
     public void handle(PingPacket ping) throws Exception
     {
-        Preconditions.checkState( thisState == State.PING, "Not expecting PING" );
+        if (!ACCEPT_INVALID_PACKETS) {
+            Preconditions.checkState(thisState == State.PING, "Not expecting PING");
+        }
         unsafe.sendPacket( ping );
         disconnect( "" );
     }

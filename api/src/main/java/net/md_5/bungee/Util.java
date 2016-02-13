@@ -78,6 +78,7 @@ public class Util
      */
     public static UUID getUUID(String uuid)
     {
-        return UUID.fromString( uuid.substring( 0, 8 ) + "-" + uuid.substring( 8, 12 ) + "-" + uuid.substring( 12, 16 ) + "-" + uuid.substring( 16, 20 ) + "-" + uuid.substring( 20, 32 ) );
+        return UUID.fromString(new StringBuilder(36).append(uuid, 0, 8).append('-').append(uuid, 8, 12).append('-')
+                .append(uuid, 12, 16).append('-').append(uuid, 16, 20).append('-').append(uuid, 20, 32).toString());
     }
 }

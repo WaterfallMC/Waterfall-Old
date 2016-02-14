@@ -70,7 +70,7 @@ public class ServerPing
 
         public String getId()
         {
-            return uniqueId.toString().replaceAll( "-", "" );
+            return Util.getMojangUUID(uniqueId);
         }
     }
     private String description;

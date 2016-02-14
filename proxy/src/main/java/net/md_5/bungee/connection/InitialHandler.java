@@ -622,8 +622,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
     @Override
     public String getUUID()
     {
-        String id = uniqueId.toString();
-        return new StringBuilder(32).append(id, 0, 8).append(id, 9, 13).append(id, 14, 18).append(id, 19, 23).append(id, 24, 36).toString();
+        return Util.getMojangUUID(uniqueId);
     }
 
     @Override

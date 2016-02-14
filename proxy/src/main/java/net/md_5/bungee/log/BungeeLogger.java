@@ -27,7 +27,7 @@ public class BungeeLogger extends Logger
 
         try
         {
-            FileHandler fileHandler = new FileHandler( System.getProperty("bungee.log-file", "proxy.log"), 1 << 24, 8, true );
+            FileHandler fileHandler = new FileHandler( System.getProperty("bungee.log-file", "proxy.log"), 1 << 22, 8, false );
             fileHandler.setFormatter( formatter );
             addHandler( fileHandler );
 

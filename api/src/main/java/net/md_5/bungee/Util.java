@@ -1,6 +1,8 @@
 package net.md_5.bungee;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
+
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -78,8 +80,12 @@ public class Util
      */
     public static UUID getUUID(String uuid)
     {
-        return UUID.fromString(new StringBuilder(36).append(uuid, 0, 8).append('-').append(uuid, 8, 12).append('-')
-                .append(uuid, 12, 16).append('-').append(uuid, 16, 20).append('-').append(uuid, 20, 32).toString());
+        return new UUID(Long.parseUnsignedLong(uuid.substring(0, 16), 16), Long.parseUnsignedLong(uuid.substring(16), 16));
+    }
+
+    private static String toHexBits(long unsigned) {
+        // Add missing leading zeros (if necessary)
+        return Strings.padStart(Long.toUnsignedString(unsigned, 16), 16, '0');
     }
 
     /**
@@ -90,7 +96,6 @@ public class Util
      */
     public static String getMojangUUID(UUID uuid)
     {
-        String id = uuid.toString();
-        return new StringBuilder(32).append(id, 0, 8).append(id, 9, 13).append(id, 14, 18).append(id, 19, 23).append(id, 24, 36).toString();
+        return toHexBits(uuid.getMostSignificantBits()) + toHexBits(uuid.getLeastSignificantBits());
     }
 }

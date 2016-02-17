@@ -10,12 +10,18 @@ Waterfall focuses on three main areas:
 
 ## Why fork BungeeCord?
 
-Think of Waterfall as a principles fork. We feel that Waterfall is a way to ultimately better the BungeeCord ecosystem by providing a faster path for new features.
+Think of Waterfall as a principles fork.
+
+Waterfall was forked because of the fact that upstream does not accept many contributions that are intended to better the ecosystem. Simply put, Waterfall aims to better
+the ecosystem by allowing changes to be exposed to a wider audience more quickly.
+
+Waterfall will still track upstream BungeeCord and merge changes as needed.
 
 ## Join us
 
-* Feel free to open a PR.
+* Feel free to open a PR! We accept contributions.
 * Join us on IRC (irc.esper.net #waterfall, [webchat](http://webchat.esper.net/?nick=&channels=waterfall)).
+* Visit our forums on [Aquifer](https://aquifermc.org).
 
 Special Thanks To
 -----------------

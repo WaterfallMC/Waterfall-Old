@@ -89,9 +89,9 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket>
 
             List<String> players = bungee.getPlayers().stream().map(ProxiedPlayer::getName).collect(Collectors.toList());
 
-            ProxyQueryEvent event = new ProxyQueryEvent(new QueryResult(listener.getMotd(), "SMP", "BungeeCord_Proxy",
+            ProxyQueryEvent event = new ProxyQueryEvent(listener, new QueryResult(listener.getMotd(), "SMP", "BungeeCord_Proxy",
                     bungee.getOnlineCount(), listener.getMaxPlayers(), listener.getHost().getPort(),
-                    listener.getHost().getHostString(), "MINECRAFT",  players, bungee.getGameVersion()), listener);
+                    listener.getHost().getHostString(), "MINECRAFT",  players, bungee.getGameVersion()));
             QueryResult result = bungee.getPluginManager().callEvent(event).getResult();
 
             out.writeByte( 0x00 );

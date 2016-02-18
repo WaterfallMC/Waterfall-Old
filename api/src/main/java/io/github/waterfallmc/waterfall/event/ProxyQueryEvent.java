@@ -16,13 +16,13 @@ import net.md_5.bungee.api.plugin.Event;
 @Data
 public class ProxyQueryEvent extends Event {
     /**
-     * The query to return.
-     */
-    @NonNull
-    private QueryResult result;
-    /**
      * The listener associated with this query.
      */
     @NonNull
     private final ListenerInfo listener;
+    /**
+     * The query to return.
+     */
+    @NonNull
+    private QueryResult result;
 }

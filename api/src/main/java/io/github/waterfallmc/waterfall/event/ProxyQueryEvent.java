@@ -1,11 +1,12 @@
 package io.github.waterfallmc.waterfall.event;
 
+import io.github.waterfallmc.waterfall.QueryResult;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NonNull;
+import net.md_5.bungee.api.config.ListenerInfo;
 import net.md_5.bungee.api.plugin.Event;
-
-import java.util.List;
 
 /**
  * This event will be posted whenever a Query request is received.
@@ -15,43 +16,13 @@ import java.util.List;
 @Data
 public class ProxyQueryEvent extends Event {
     /**
-     * The message of the day to return.
+     * The query to return.
      */
-    private String motd;
+    @NonNull
+    private QueryResult result;
     /**
-     * The game type to return, usually SMP.
+     * The listener associated with this query.
      */
-    private String gameType;
-    /**
-     * The world name to return.
-     */
-    private String worldName;
-    /**
-     * The number of players currently online.
-     */
-    private int onlinePlayers;
-    /**
-     * The maximum number of players that can be online.
-     */
-    private int maxPlayers;
-    /**
-     * The port for this server.
-     */
-    private int port;
-    /**
-     * The hostname for this server.
-     */
-    private String address;
-    /**
-     * The game ID for this server, usually MINECRAFT.
-     */
-    private String gameId;
-    /**
-     * The players currently online.
-     */
-    private final List<String> players;
-    /**
-     * The version to return for this server.
-     */
-    private String version;
+    @NonNull
+    private final ListenerInfo listener;
 }

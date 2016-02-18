@@ -1,5 +1,6 @@
 package net.md_5.bungee.query;
 
+import io.github.waterfallmc.waterfall.QueryResult;
 import io.github.waterfallmc.waterfall.event.ProxyQueryEvent;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.AddressedEnvelope;
@@ -88,10 +89,10 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket>
 
             List<String> players = bungee.getPlayers().stream().map(ProxiedPlayer::getName).collect(Collectors.toList());
 
-            ProxyQueryEvent event = new ProxyQueryEvent(listener.getMotd(), "SMP", "BungeeCord_Proxy", bungee.getOnlineCount(),
-                    listener.getMaxPlayers(), listener.getHost().getPort(), listener.getHost().getHostString(), "MINECRAFT",
-                    players, bungee.getGameVersion());
-            bungee.getPluginManager().callEvent(event);
+            ProxyQueryEvent event = new ProxyQueryEvent(new QueryResult(listener.getMotd(), "SMP", "BungeeCord_Proxy",
+                    bungee.getOnlineCount(), listener.getMaxPlayers(), listener.getHost().getPort(),
+                    listener.getHost().getHostString(), "MINECRAFT",  players, bungee.getGameVersion()), listener);
+            QueryResult result = bungee.getPluginManager().callEvent(event).getResult();
 
             out.writeByte( 0x00 );
             out.writeInt( sessionId );
@@ -99,13 +100,13 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket>
             if ( in.readableBytes() == 0 )
             {
                 // Short response
-                writeString( out, event.getMotd() ); // MOTD
-                writeString( out, event.getGameType() ); // Game Type
-                writeString( out, event.getWorldName() ); // World Name
-                writeNumber( out, event.getOnlinePlayers() ); // Online Count
-                writeNumber( out, event.getMaxPlayers() ); // Max Players
-                writeShort( out, event.getPort() ); // Port
-                writeString( out, event.getAddress() ); // IP
+                writeString( out, result.getMotd() ); // MOTD
+                writeString( out, result.getGameType() ); // Game Type
+                writeString( out, result.getWorldName() ); // World Name
+                writeNumber( out, result.getOnlinePlayers() ); // Online Count
+                writeNumber( out, result.getMaxPlayers() ); // Max Players
+                writeShort( out, result.getPort() ); // Port
+                writeString( out, result.getAddress() ); // IP
             } else if ( in.readableBytes() == 4 )
             {
                 // Long Response
@@ -115,18 +116,18 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket>
                 } );
                 Map<String, String> data = new LinkedHashMap<>();
 
-                data.put( "hostname", event.getMotd() );
-                data.put( "gametype", event.getGameType() );
+                data.put( "hostname", result.getMotd() );
+                data.put( "gametype", result.getGameType() );
                 // Start Extra Info
-                data.put( "game_id", event.getGameId() );
-                data.put( "version", event.getVersion() );
+                data.put( "game_id", result.getGameId() );
+                data.put( "version", result.getVersion() );
                 data.put( "plugins", "" ); // TODO: Allow population?
                 // End Extra Info
-                data.put( "map", event.getWorldName() );
-                data.put( "numplayers", Integer.toString( event.getOnlinePlayers() ) );
-                data.put( "maxplayers", Integer.toString( event.getMaxPlayers() ) );
-                data.put( "hostport", Integer.toString( event.getPort() ) );
-                data.put( "hostip", event.getAddress() );
+                data.put( "map", result.getWorldName() );
+                data.put( "numplayers", Integer.toString( result.getOnlinePlayers() ) );
+                data.put( "maxplayers", Integer.toString( result.getMaxPlayers() ) );
+                data.put( "hostport", Integer.toString( result.getPort() ) );
+                data.put( "hostip", result.getAddress() );
 
                 for ( Map.Entry<String, String> entry : data.entrySet() )
                 {
@@ -138,7 +139,7 @@ public class QueryHandler extends SimpleChannelInboundHandler<DatagramPacket>
                 // Padding
                 writeString( out, "\01player_\00" );
                 // Player List
-                event.getPlayers().stream().forEach(p -> writeString(out, p));
+                result.getPlayers().stream().forEach(p -> writeString(out, p));
                 out.writeByte( 0x00 ); // Null
             } else
             {

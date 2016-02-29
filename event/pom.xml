@@ -17,4 +17,12 @@
 
     <name>Waterfall-Event</name>
     <description>Generic java event dispatching API intended for use with Waterfall</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-all</artifactId>
+            <version>5.0.4</version>
+        </dependency>
+    </dependencies>
 </project>

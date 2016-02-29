@@ -17,4 +17,24 @@
 
     <name>Waterfall-Event</name>
     <description>Generic java event dispatching API intended for use with Waterfall.</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>net.techcable</groupId>
+            <artifactId>event4j</artifactId>
+            <version>1.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-all</artifactId>
+            <version>5.0.4</version>
+        </dependency>
+    </dependencies>
+
+    <repositories>
+        <repository>
+            <id>techcable-repo</id>
+            <url>https://repo.techcable.net/content/groups/public/</url>
+        </repository>
+    </repositories>
 </project>

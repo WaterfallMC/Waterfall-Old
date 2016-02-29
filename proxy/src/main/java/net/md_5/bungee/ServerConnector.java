@@ -5,6 +5,8 @@ import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
+
+import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 import lombok.Getter;
@@ -144,7 +146,6 @@ public class ServerConnector extends PacketHandler
     @Override
     public void handle(SetCompression setCompression) throws Exception
     {
-        user.setCompressionThreshold( setCompression.getThreshold() );
         ch.setCompressionThreshold( setCompression.getThreshold() );
     }
 
@@ -195,17 +196,10 @@ public class ServerConnector extends PacketHandler
 
             user.unsafe().sendPacket( modLogin );
 
-            if ( user.getPendingConnection().getVersion() < ProtocolConstants.MINECRAFT_1_8 )
-            {
-                user.unsafe().sendPacket( new PluginMessage( "MC|Brand", (bungee.getName() + " (" + bungee.getVersion() + ")").getBytes(Charsets.UTF_8),
-                        handshakeHandler.isServerForge() ) );
-            } else
-            {
-                ByteBuf brand = ByteBufAllocator.DEFAULT.heapBuffer();
-                DefinedPacket.writeString( bungee.getName() + " (" + bungee.getVersion() + ")", brand );
-                user.unsafe().sendPacket( new PluginMessage( "MC|Brand", brand.array().clone(), handshakeHandler.isServerForge() ) );
-                brand.release();
-            }
+            ByteBuf brand = ByteBufAllocator.DEFAULT.heapBuffer();
+            DefinedPacket.writeString( bungee.getName() + " (" + bungee.getVersion() + ")", brand );
+            user.unsafe().sendPacket( new PluginMessage( "MC|Brand", brand.array().clone(), handshakeHandler.isServerForge() ) );
+            brand.release();
         } else
         {
             user.getServer().setObsolete( true );
@@ -265,12 +259,24 @@ public class ServerConnector extends PacketHandler
     @Override
     public void handle(Kick kick) throws Exception
     {
-        ServerInfo def = bungee.getServerInfo( user.getPendingConnection().getListener().getFallbackServer() );
+        user.setLastServerJoined(user.getLastServerJoined() + 1);
+        String serverName = "";
+        List<String> servers = user.getPendingConnection().getListener().getServerPriority();
+        if ( user.getLastServerJoined() < servers.size() ) {
+            serverName = servers.get( user.getLastServerJoined() );
+        }
+        ServerInfo def = ProxyServer.getInstance().getServers().get( serverName );
         if ( Objects.equal( target, def ) )
         {
             def = null;
         }
-        ServerKickEvent event = bungee.getPluginManager().callEvent( new ServerKickEvent( user, target, ComponentSerializer.parse( kick.getMessage() ), def, ServerKickEvent.State.CONNECTING ) );
+        ServerKickEvent event = new ServerKickEvent(user, target, ComponentSerializer.parse(kick.getMessage()), def, ServerKickEvent.State.CONNECTING);
+        if ( event.getKickReason().toLowerCase().contains( "outdated" ) && def != null )
+        {
+            // Pre cancel the event if we are going to try another server
+            event.setCancelled( true );
+        }
+        bungee.getPluginManager().callEvent( event );
         if ( event.isCancelled() && event.getCancelServer() != null )
         {
             user.connect( event.getCancelServer() );
@@ -324,11 +330,6 @@ public class ServerConnector extends PacketHandler
         if ( pluginMessage.getTag().equals( ForgeConstants.FML_HANDSHAKE_TAG ) || pluginMessage.getTag().equals( ForgeConstants.FORGE_REGISTER ) )
         {
             this.handshakeHandler.handle( pluginMessage );
-            if ( user.getForgeClientHandler().checkUserOutdated() )
-            {
-                ch.close();
-                user.getPendingConnects().remove( target );
-            }
 
             // We send the message as part of the handler, so don't send it here.
             throw CancelSendSignal.INSTANCE;

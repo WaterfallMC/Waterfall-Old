@@ -4,6 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
+<<<<<<< HEAD
         <groupId>io.github.waterfallmc</groupId>
         <artifactId>waterfall-parent</artifactId>
         <version>1.8-SNAPSHOT</version>
@@ -13,6 +14,17 @@
     <groupId>io.github.waterfallmc</groupId>
     <artifactId>waterfall-native</artifactId>
     <version>1.8-SNAPSHOT</version>
+=======
+        <groupId>net.md-5</groupId>
+        <artifactId>bungeecord-parent</artifactId>
+        <version>1.9-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <groupId>net.md-5</groupId>
+    <artifactId>bungeecord-native</artifactId>
+    <version>1.9-SNAPSHOT</version>
+>>>>>>> 05de455a9c46e90e2cfd823eb6cfd320c399a346
     <packaging>jar</packaging>
 
     <name>Waterfall-Native</name>

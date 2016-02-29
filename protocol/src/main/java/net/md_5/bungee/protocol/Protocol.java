@@ -135,9 +135,6 @@ public enum Protocol
 
         public final DefinedPacket createPacket(int id, int protocol)
         {
-<<<<<<< HEAD
-            if ( id < 0 || id >= MAX_PACKET_ID ) return null;
-=======
             TIntIntMap remap = packetRemap.get( protocol );
             if ( remap != null )
             {
@@ -151,7 +148,6 @@ public enum Protocol
             {
                 throw new BadPacketException( "Packet with id " + id + " outside of range " );
             }
->>>>>>> 05de455a9c46e90e2cfd823eb6cfd320c399a346
 
             Constructor<? extends DefinedPacket> constructor = packetConstructors[id];
             try

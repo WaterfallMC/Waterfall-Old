@@ -12,7 +12,7 @@
 
     <groupId>io.github.waterfallmc</groupId>
     <artifactId>waterfall-module-cmd-send</artifactId>
-    <version>1.8-SNAPSHOT</version>
+    <version>1.9-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>cmd_send</name>

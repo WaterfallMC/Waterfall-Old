@@ -12,7 +12,7 @@ public class UnsafeUtils {
         Unsafe unsafe;
         try {
             Class c = Class.forName("sun.misc.Unsafe");
-            Field f = c.getField("theUnsafe");
+            Field f = c.getDeclaredField("theUnsafe");
             f.setAccessible(true);
             unsafe = (Unsafe) f.get(null);
         } catch (ClassNotFoundException | NoSuchFieldException | SecurityException e) {

@@ -6,13 +6,13 @@
     <parent>
         <groupId>io.github.waterfallmc</groupId>
         <artifactId>waterfall-parent</artifactId>
-        <version>1.8-SNAPSHOT</version>
+        <version>1.9-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <groupId>io.github.waterfallmc</groupId>
     <artifactId>waterfall-protocol</artifactId>
-    <version>1.8-SNAPSHOT</version>
+    <version>1.9-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Waterfall-Protocol</name>

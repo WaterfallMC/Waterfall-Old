@@ -147,7 +147,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
         final boolean v1_5 = ping.isV1_5();
 
         ServerPing legacy = new ServerPing( new ServerPing.Protocol( bungee.getName() + " " + bungee.getGameVersion(), bungee.getProtocolVersion() ),
-                new ServerPing.Players( listener.getMaxPlayers(), bungee.getOnlineCount(), null ), listener.getMotd(), (Favicon) null );
+                new ServerPing.Players( listener.getMaxPlayers(), bungee.getOnlineCount(), null ),
+                new TextComponent( TextComponent.fromLegacyText( listener.getMotd() ) ), (Favicon) null );
 
         Callback<ProxyPingEvent> callback = new Callback<ProxyPingEvent>()
         {
@@ -217,9 +218,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                     @Override
                     public void done(ProxyPingEvent pingResult, Throwable error)
                     {
-                        // Pinging shouldn't reset throttle
-                        //BungeeCord.getInstance().getConnectionThrottle().unthrottle( getAddress().getAddress() );
-                        Gson gson = handshake.getProtocolVersion() == ProtocolConstants.MINECRAFT_1_7_2 ? BungeeCord.getInstance().gsonLegacy : BungeeCord.getInstance().gson;
+                        Gson gson = BungeeCord.getInstance().gson;
                         unsafe.sendPacket( new StatusResponse( gson.toJson( pingResult.getResponse() ) ) );
                     }
                 };
@@ -502,13 +501,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                             userCon.setCompressionThreshold( BungeeCord.getInstance().config.getCompressionThreshold() );
                             userCon.init();
 
-                            if ( getVersion() >= ProtocolConstants.MINECRAFT_1_7_6 )
-                            {
-                                unsafe.sendPacket( new LoginSuccess( getUniqueId().toString(), getName() ) ); // With dashes in between
-                            } else
-                            {
-                                unsafe.sendPacket( new LoginSuccess( getUUID(), getName() ) ); // Without dashes, for older clients.
-                            }
+                            unsafe.sendPacket( new LoginSuccess( getUniqueId().toString(), getName() ) ); // With dashes in between
                             ch.setProtocol( Protocol.GAME );
 
                             ch.getHandle().pipeline().get( HandlerBoss.class ).setHandler( new UpstreamBridge( bungee, userCon ) );

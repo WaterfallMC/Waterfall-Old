@@ -30,13 +30,20 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.util.ResourceLeakDetector;
 import net.md_5.bungee.conf.Configuration;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintStream;
+import java.io.Reader;
+import java.io.Writer;
 import java.net.InetSocketAddress;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -234,9 +241,8 @@ public class BungeeCord extends ProxyServer
 
             if ( messagesFile.exists() )
             {
-                try ( InputStream is = new FileInputStream( messagesFile ) )
-                {
-                    messages.load( is );
+                try (Reader reader = new BufferedReader(new InputStreamReader(new FileInputStream(messagesFile), Charsets.UTF_8))) {
+                    messages.load(reader);
                 }
             }
 
@@ -254,9 +260,9 @@ public class BungeeCord extends ProxyServer
             if ( newEntries > 0 )
             {
                 // We need to save the file to add the new entries
-                try ( OutputStream os = new FileOutputStream( messagesFile ) )
+                try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(messagesFile), Charsets.UTF_8)))
                 {
-                    messages.store( os, "Waterfall messages, last updated for " + getVersion() );
+                    messages.store(writer, "Waterfall messages, last updated for " + getVersion() );
                 }
             }
         } catch ( Exception ex )
@@ -265,9 +271,9 @@ public class BungeeCord extends ProxyServer
         }
 
         // Load the messages from the configuration file
-        try ( InputStream is = new FileInputStream( messagesFile ) )
+        try (Reader reader = new BufferedReader(new InputStreamReader(new FileInputStream( messagesFile ), Charsets.UTF_8)))
         {
-            bundle = new PropertyResourceBundle( is );
+            bundle = new PropertyResourceBundle(reader);
         } catch ( Exception ex )
         {
             getLogger().log( Level.SEVERE, "Could not reload messages", ex );

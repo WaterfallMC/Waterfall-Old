@@ -70,6 +70,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import jline.console.ConsoleReader;
 import lombok.Getter;
@@ -725,15 +726,9 @@ public class BungeeCord extends ProxyServer
             return Collections.singleton( exactMatch );
         }
 
-        return Sets.newHashSet( Iterables.filter( getPlayers(), new Predicate<ProxiedPlayer>()
-        {
-
-            @Override
-            public boolean apply(ProxiedPlayer input)
-            {
-                return ( input == null ) ? false : input.getName().toLowerCase().startsWith( partialName.toLowerCase() );
-            }
-        } ) );
+        return getPlayers().stream()
+                .filter(p -> p.getName().regionMatches(true, 0, partialName, 0, partialName.length()))
+                .collect(Collectors.toSet());
     }
 
     @Override

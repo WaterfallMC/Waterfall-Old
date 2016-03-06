@@ -187,12 +187,12 @@ public final class UserConnection implements ProxiedPlayer
 
         // No-config FML handshake marker.
         // Set whether the connection has a 1.8 FML marker in the handshake.
-        if (this.getPendingConnection().getExtraDataInHandshake().contains( ForgeConstants.FML_HANDSHAKE_TOKEN )) 
+        if (this.getPendingConnection().getExtraDataInHandshake().contains( ForgeConstants.FML_HANDSHAKE_TOKEN ))
         {
             forgeClientHandler.setFmlTokenInHandshake( true );
 
             // If we IP forward, add the a FML marker to the game profile.
-            if ( BungeeCord.getInstance().config.isIpForward() ) 
+            if ( BungeeCord.getInstance().config.isIpForward() )
             {
                 // Get the user profile.
                 LoginResult profile = pendingConnection.getLoginProfile();
@@ -228,7 +228,6 @@ public final class UserConnection implements ProxiedPlayer
     public void setDisplayName(String name)
     {
         Preconditions.checkNotNull( name, "displayName" );
-        Preconditions.checkArgument( name.length() <= 16, "Display name cannot be longer than 16 characters" );
         displayName = name;
     }
 

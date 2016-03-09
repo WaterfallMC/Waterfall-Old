@@ -141,5 +141,5 @@ public class PipelineUtils
 
             ch.pipeline().addLast( BOSS_HANDLER, new HandlerBoss() );
         }
-    };
+    }
 }

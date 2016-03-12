@@ -1,11 +1,6 @@
 package net.md_5.bungee.event.asm;
 
 
-import java.util.concurrent.atomic.AtomicInteger;
-
-import net.md_5.bungee.event.UnsafeUtils;
-
-import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Type;
 
 public interface ClassDefiner {
@@ -32,11 +27,7 @@ public interface ClassDefiner {
     public Class<?> defineClass(ClassLoader parentLoader, Type name, byte[] data);
 
     public static ClassDefiner getInstance() {
-        if (UnsafeUtils.isUnsafeSupported()) {
-            return UnsafeClassDefiner.INSTANCE;
-        } else {
-            return SafeClassDefiner.INSTANCE;
-        }
+        return SafeClassDefiner.INSTANCE;
     }
 
 

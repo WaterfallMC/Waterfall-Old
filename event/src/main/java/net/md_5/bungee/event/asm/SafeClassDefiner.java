@@ -7,8 +7,6 @@ import java.util.concurrent.ConcurrentMap;
 
 import com.google.common.base.Preconditions;
 
-import net.md_5.bungee.event.UnsafeUtils;
-
 import org.objectweb.asm.Type;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)

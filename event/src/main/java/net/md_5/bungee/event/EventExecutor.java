@@ -16,18 +16,19 @@ public interface EventExecutor {
      * Invoke the method on the listener with the given event as an argument
      *
      * @param listener the listener to invoke
-     * @param event the event
+     * @param event    the event
      * @throws ClassCastException if the listener or event is not of an appropriate type
-     * @throws Throwable any throwable thrown by the underlying method
+     * @throws Throwable          any throwable thrown by the underlying method
      */
     public void invoke(Object listener, Object event) throws Throwable;
 
     public static EventExecutor create(Method m) {
         Preconditions.checkNotNull(m, "Null method");
         Preconditions.checkArgument(m.getParameterCount() != 0, "Incorrect number of arguments %s", m.getParameterCount());
-        Preconditions.checkArgument(!Modifier.isStatic(m.getModifiers()), "Static method %s", m.getName());
         ClassDefiner definer = ClassDefiner.getInstance();
-        if (definer.isBypassAccessChecks() || Modifier.isPublic(m.getDeclaringClass().getModifiers()) && Modifier.isPublic(m.getModifiers())) {
+        if (Modifier.isStatic(m.getModifiers())) {
+            return new StaticMethodHandleEventExecutor(m);
+        } else if (definer.isBypassAccessChecks() || Modifier.isPublic(m.getDeclaringClass().getModifiers()) && Modifier.isPublic(m.getModifiers())) {
             String name = ASMEventExecutorGenerator.generateName();
             byte[] classData = ASMEventExecutorGenerator.generateEventExecutor(m, name);
             Class<? extends EventExecutor> c = definer.defineClass(m.getDeclaringClass().getClassLoader(), Type.getObjectType(name), classData).asSubclass(EventExecutor.class);

@@ -11,11 +11,11 @@ import java.lang.reflect.Modifier;
 import com.google.common.base.Preconditions;
 
 @RequiredArgsConstructor
-public class MethodHandleEventExecutor implements EventExecutor {
+public class StaticMethodHandleEventExecutor implements EventExecutor {
     private final MethodHandle handle;
 
-    public MethodHandleEventExecutor(Method m) {
-        Preconditions.checkArgument(!Modifier.isStatic(m.getModifiers()), "Static method: %s", m);
+    public StaticMethodHandleEventExecutor(Method m) {
+        Preconditions.checkArgument(Modifier.isStatic(m.getModifiers()), "Not a static method: %s", m);
         try {
             m.setAccessible(true);
             this.handle = MethodHandles.lookup().unreflect(m);
@@ -27,7 +27,7 @@ public class MethodHandleEventExecutor implements EventExecutor {
     @Override
     public void invoke(Object listener, Object event) throws Throwable {
         try {
-            handle.invoke(listener, event);
+            handle.invoke(event);
         } catch (ClassCastException | WrongMethodTypeException e) {
             throw new IllegalArgumentException(e.getMessage());
         }

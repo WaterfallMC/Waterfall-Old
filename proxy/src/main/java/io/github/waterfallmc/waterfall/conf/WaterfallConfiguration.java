@@ -8,7 +8,6 @@ import java.util.concurrent.TimeUnit;
 import net.md_5.bungee.conf.Configuration;
 import net.md_5.bungee.conf.YamlConfig;
 
-@Getter
 public class WaterfallConfiguration extends Configuration {
 
     /*
@@ -48,5 +47,20 @@ public class WaterfallConfiguration extends Configuration {
         tabThrottle = config.getInt("throttling.tab_complete", tabThrottle);
         joinThrottle = config.getInt("throttling.join", joinThrottle);
         metrics = config.getBoolean("metrics", metrics);
+    }
+
+    @Override
+    public long getTabThrottle() {
+        return tabThrottle;
+    }
+
+    @Override
+    public long getJoinThrottle() {
+        return joinThrottle;
+    }
+
+    @Override
+    public boolean isMetrics() {
+        return metrics;
     }
 }

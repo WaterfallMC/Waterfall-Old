@@ -1,12 +1,17 @@
 package net.md_5.bungee;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.google.common.primitives.Ints;
 
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.UUID;
+
+import io.github.waterfallmc.waterfall.utils.Hex;
+import io.github.waterfallmc.waterfall.utils.UUIDUtils;
 
 /**
  * Series of utility classes to perform various operations.
@@ -44,7 +49,7 @@ public class Util
      */
     public static String hex(int i)
     {
-        return String.format( "0x%02X", i );
+        return Hex.encodeString(Ints.toByteArray(i));
     }
 
     /**
@@ -80,12 +85,7 @@ public class Util
      */
     public static UUID getUUID(String uuid)
     {
-        return new UUID(Long.parseUnsignedLong(uuid.substring(0, 16), 16), Long.parseUnsignedLong(uuid.substring(16), 16));
-    }
-
-    private static String toHexBits(long unsigned) {
-        // Add missing leading zeros (if necessary)
-        return Strings.padStart(Long.toUnsignedString(unsigned, 16), 16, '0');
+        return UUIDUtils.fromString(uuid);
     }
 
     /**
@@ -96,6 +96,6 @@ public class Util
      */
     public static String getMojangUUID(UUID uuid)
     {
-        return toHexBits(uuid.getMostSignificantBits()) + toHexBits(uuid.getLeastSignificantBits());
+        return UUIDUtils.toMojangString(uuid);
     }
 }

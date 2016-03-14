@@ -45,6 +45,7 @@ import net.md_5.bungee.netty.PipelineUtils;
 import net.md_5.bungee.netty.cipher.CipherDecoder;
 import net.md_5.bungee.netty.cipher.CipherEncoder;
 import net.md_5.bungee.protocol.DefinedPacket;
+import net.md_5.bungee.protocol.PacketWrapper;
 import net.md_5.bungee.protocol.packet.Handshake;
 import net.md_5.bungee.protocol.packet.PluginMessage;
 import net.md_5.bungee.protocol.packet.EncryptionResponse;
@@ -553,9 +554,18 @@ public class InitialHandler extends PacketHandler implements PendingConnection
         disconnect( TextComponent.fromLegacyText( reason ) );
     }
 
+    @Getter
+    private boolean disconnecting = false;
+
+    public boolean shouldHandle(PacketWrapper p) {
+        return !isDisconnecting();
+    }
+
     @Override
     public void disconnect(final BaseComponent... reason)
     {
+        Preconditions.checkState(!disconnecting, "Already disconnecting");
+        disconnecting = true;
         if ( !ch.isClosed() )
         {
             // Why do we have to delay this you might ask? Well the simple reason is MOJANG.

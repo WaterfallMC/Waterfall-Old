@@ -5,6 +5,7 @@ import net.md_5.bungee.compress.PacketDecompressor;
 import net.md_5.bungee.protocol.PacketWrapper;
 import com.google.common.base.Preconditions;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.Getter;
@@ -16,7 +17,6 @@ public class ChannelWrapper
 {
 
     private final Channel ch;
-    @Getter
     private volatile boolean closed;
 
     public ChannelWrapper(ChannelHandlerContext ctx)
@@ -38,28 +38,43 @@ public class ChannelWrapper
 
     public void write(Object packet)
     {
-        if ( !closed )
+        if ( !isClosed() )
         {
             if ( packet instanceof PacketWrapper )
             {
                 ( (PacketWrapper) packet ).setReleased( true );
-                ch.write( ( (PacketWrapper) packet ).buf, ch.voidPromise() );
+                ch.writeAndFlush( ( (PacketWrapper) packet ).buf, ch.voidPromise() );
             } else
             {
-                ch.write( packet, ch.voidPromise() );
+                ch.writeAndFlush( packet, ch.voidPromise() );
             }
-            ch.flush();
         }
     }
 
     public void close()
     {
-        if ( !closed )
+        if ( !isClosed() )
         {
             closed = true;
             ch.flush();
             ch.close();
         }
+    }
+
+    /**
+     * Send the given packet, then close the connection
+     *
+     * @param packet the packet to send before closing
+     */
+    public void close(Object packet) {
+        if (!isClosed()) {
+            closed = true;
+            ch.writeAndFlush(packet).addListeners(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE, ChannelFutureListener.CLOSE);
+        }
+    }
+
+    public boolean isClosed() {
+        return closed || !ch.isActive();
     }
 
     public void addBefore(String baseName, String name, ChannelHandler handler)

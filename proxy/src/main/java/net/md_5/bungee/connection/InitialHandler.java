@@ -262,7 +262,33 @@ public class InitialHandler extends PacketHandler implements PendingConnection
         this.handshake = handshake;
         ch.setVersion( handshake.getProtocolVersion() );
 
-        // Starting with FML 1.8, a "\0FML\0" token is appended to the handshake. This interferes 
+        final InetAddress addresses = ((InetSocketAddress) ch.getHandle().remoteAddress()).getAddress();
+        switch (handshake.getRequestedProtocol()) {
+            default:
+                break; // Don't throttle
+            case 2:
+                /*
+                 * Join Throttling should only be used if its definitely not a ping / status request
+                 * otherwise pings after status requests are blocked
+                 */
+                if (!BungeeCord.getInstance().getJoinThrottle().throttle(addresses)) {
+                    break; // Don't throttle
+                } else if (LOG_THROTTLED_JOINS) {
+                    BungeeCord.getInstance().getLogger().log(Level.INFO, "{0} at {1} was join-throttled", new Object[]{this.getName(), addresses.getHostAddress()});
+                }
+
+                // *** Throttle code ***
+
+                // setting thisState to username to prevent the client from sending handshakes over and over again without getting disconnected
+                thisState = State.USERNAME;
+                // setting protocol to login so we can send the kick message which is actually supported by the minecraft client after it sent the handshake
+                ch.setProtocol( Protocol.LOGIN );
+                // Do not process any further packets
+                disconnect(bungee.getTranslation("join_throttle_kick", TimeUnit.MILLISECONDS.toSeconds(BungeeCord.getInstance().getConfig().getJoinThrottle())));
+                return; // Stop processing the packet
+        }
+
+        // Starting with FML 1.8, a "\0FML\0" token is appended to the handshake. This interferes
         // with Bungee's IP forwarding, so we detect it, and remove it from the host string, for now.
         // We know FML appends \00FML\00. However, we need to also consider that other systems might
         // add their own data to the end of the string. So, we just take everything from the \0 character
@@ -307,18 +333,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
     @Override
     public void handle(LoginRequest loginRequest) throws Exception
     {
-        /*
-         * should only be used if its definitely not a ping / status request
-         * otherwise pings after status requests are blocked
-         */
-        final InetAddress addresses = ((InetSocketAddress) ch.getHandle().remoteAddress()).getAddress();
-        if (BungeeCord.getInstance().getJoinThrottle().throttle(addresses)) {
-            if (LOG_THROTTLED_JOINS) {
-                BungeeCord.getInstance().getLogger().log(Level.INFO, "{0} at {1} was join-throttled", new Object[]{this.getName(), addresses.getHostAddress()});
-            }
-            disconnect(bungee.getTranslation("join_throttle_kick", TimeUnit.MILLISECONDS.toSeconds(BungeeCord.getInstance().getConfig().getJoinThrottle())));
-            return;
-        }
+
         Preconditions.checkState( thisState == State.USERNAME, "Not expecting USERNAME" );
         this.loginRequest = loginRequest;
 

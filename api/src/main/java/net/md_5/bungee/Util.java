@@ -1,10 +1,14 @@
 package net.md_5.bungee;
 
 import com.google.common.base.Joiner;
+import com.google.common.primitives.Ints;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.UUID;
+
+import io.github.waterfallmc.waterfall.utils.Hex;
+import io.github.waterfallmc.waterfall.utils.UUIDUtils;
 
 /**
  * Series of utility classes to perform various operations.
@@ -42,7 +46,7 @@ public class Util
      */
     public static String hex(int i)
     {
-        return String.format( "0x%02X", i );
+        return Hex.encodeString(Ints.toByteArray(i));
     }
 
     /**
@@ -78,10 +82,17 @@ public class Util
      */
     public static UUID getUUID(String uuid)
     {
-        return UUID.fromString( uuid.substring( 0, 8 ) + "-" + uuid.substring( 8, 12 ) + "-" + uuid.substring( 12, 16 ) + "-" + uuid.substring( 16, 20 ) + "-" + uuid.substring( 20, 32 ) );
+        return UUIDUtils.fromString(uuid);
     }
 
-    public static String getMojangUUID(UUID uuid) {
-        return uuid.toString().replace( "-", "" );
+    /**
+     * Converts a UUID to a Mojang UUID
+     *
+     * @param uuid The string to be converted
+     * @return The result
+     */
+    public static String getMojangUUID(UUID uuid)
+    {
+        return UUIDUtils.toMojangString(uuid);
     }
 }

@@ -43,12 +43,11 @@ public class ChannelWrapper
             if ( packet instanceof PacketWrapper )
             {
                 ( (PacketWrapper) packet ).setReleased( true );
-                ch.writeAndFlush( ( (PacketWrapper) packet ).buf ).addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
+                ch.writeAndFlush( ( (PacketWrapper) packet ).buf, ch.voidPromise() );
             } else
             {
-                ch.writeAndFlush( packet ).addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
+                ch.writeAndFlush( packet, ch.voidPromise() );
             }
-            ch.flush();
         }
     }
 
@@ -70,9 +69,7 @@ public class ChannelWrapper
     public void close(Object packet) {
         if (!isClosed()) {
             closed = true;
-            ch.writeAndFlush(packet).addListeners(
-                    ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE,
-                    ChannelFutureListener.CLOSE);
+            ch.writeAndFlush(packet).addListeners(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE, ChannelFutureListener.CLOSE);
         }
     }
 

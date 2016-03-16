@@ -24,7 +24,7 @@ public class UUIDUtils {
 
     public static UUID fromMojangString(String s) {
         Preconditions.checkNotNull(s, "Null string");
-        if (s.length() == 32) {
+        if (s.length() != 32) {
             throw new IllegalArgumentException("UUID not in mojang format: " + s);
         }
         return fromMojangString0(s);

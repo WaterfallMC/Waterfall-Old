@@ -42,7 +42,6 @@ import org.yaml.snakeyaml.introspector.PropertyUtils;
 public class PluginManager
 {
 
-    private static final Pattern argsSplit = Pattern.compile( " " );
     /*========================================================================*/
     private final ProxyServer proxy;
     /*========================================================================*/
@@ -54,7 +53,6 @@ public class PluginManager
     private final Multimap<Plugin, Command> commandsByPlugin = ArrayListMultimap.create();
     private final Multimap<Plugin, Listener> listenersByPlugin = ArrayListMultimap.create();
 
-    @SuppressWarnings("unchecked")
     public PluginManager(ProxyServer proxy)
     {
         this.proxy = proxy;
@@ -126,7 +124,7 @@ public class PluginManager
      */
     public boolean dispatchCommand(CommandSender sender, String commandLine, List<String> tabResults)
     {
-        String[] split = argsSplit.split( commandLine, -1 );
+        String[] split = commandLine.split(" ", -1);
         // Check for chat that only contains " "
         if ( split.length == 0 )
         {
@@ -347,6 +345,9 @@ public class PluginManager
                     try ( InputStream in = jar.getInputStream( pdf ) )
                     {
                         PluginDescription desc = yaml.loadAs( in, PluginDescription.class );
+                        Preconditions.checkNotNull( desc.getName(), "Plugin from %s has no name", file );
+                        Preconditions.checkNotNull( desc.getMain(), "Plugin from %s has no main", file );
+
                         desc.setFile( file );
                         toLoad.put( desc.getName(), desc );
                     }

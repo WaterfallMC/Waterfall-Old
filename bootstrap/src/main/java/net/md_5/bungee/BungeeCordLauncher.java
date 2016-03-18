@@ -48,7 +48,7 @@ public class BungeeCordLauncher
             if ( buildDate.before( deadline.getTime() ) )
             {
                 System.err.println( "*** Warning, this build is outdated ***" );
-                System.err.println( "*** Please download a new build from http://ci.md-5.net/job/BungeeCord ***" );
+                System.err.println( "*** Please download a new build from https://ci.getwaterfall.xyz/ ***" );
                 System.err.println( "*** You will get NO support regarding this build ***" );
                 System.err.println( "*** Server will start in 10 seconds ***" );
                 Thread.sleep( TimeUnit.SECONDS.toMillis( 10 ) );
@@ -57,7 +57,7 @@ public class BungeeCordLauncher
 
         BungeeCord bungee = new BungeeCord();
         ProxyServer.setInstance( bungee );
-        bungee.getLogger().info( "Enabled BungeeCord version " + bungee.getVersion() );
+        bungee.getLogger().info( "Enabled Waterfall version " + bungee.getVersion() );
         bungee.start();
 
         if ( !options.has( "noconsole" ) )

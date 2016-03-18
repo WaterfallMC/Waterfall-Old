@@ -59,7 +59,7 @@ public class ServerConnection implements Server
                 @Override
                 public void run()
                 {
-                    ch.getHandle().close();
+                    ch.close();
                 }
             }, 100, TimeUnit.MILLISECONDS );
         }
@@ -75,6 +75,12 @@ public class ServerConnection implements Server
     public InetSocketAddress getAddress()
     {
         return getInfo().getAddress();
+    }
+
+    @Override
+    public boolean isConnected()
+    {
+        return !ch.isClosed();
     }
 
     @Override

@@ -49,18 +49,21 @@ public class PipelineUtils
         @Override
         protected void initChannel(Channel ch) throws Exception
         {
+            // Handled in InitialHandler.handle(LoginRequest)
+            /*
             if ( BungeeCord.getInstance().getConnectionThrottle().throttle( ( (InetSocketAddress) ch.remoteAddress() ).getAddress() ) )
             {
                 // TODO: Better throttle - we can't throttle this way if we want to maintain 1.7 compat!
                 // ch.close();
                 // return;
             }
+            */
 
             BASE.initChannel( ch );
             ch.pipeline().addBefore( FRAME_DECODER, LEGACY_DECODER, new LegacyDecoder() );
             ch.pipeline().addAfter( FRAME_DECODER, PACKET_DECODER, new MinecraftDecoder( Protocol.HANDSHAKE, true, ProxyServer.getInstance().getProtocolVersion() ) );
             ch.pipeline().addAfter( FRAME_PREPENDER, PACKET_ENCODER, new MinecraftEncoder( Protocol.HANDSHAKE, true, ProxyServer.getInstance().getProtocolVersion() ) );
-            ch.pipeline().addBefore( FRAME_PREPENDER, LEGACY_KICKER, new KickStringWriter() );
+            ch.pipeline().addBefore( FRAME_PREPENDER, LEGACY_KICKER, PipelineUtils.KICK_STRING_WRITER );
             ch.pipeline().get( HandlerBoss.class ).setHandler( new InitialHandler( ProxyServer.getInstance(), ch.attr( LISTENER ).get() ) );
         }
     };
@@ -76,6 +79,7 @@ public class PipelineUtils
     public static final String FRAME_PREPENDER = "frame-prepender";
     public static final String LEGACY_DECODER = "legacy-decoder";
     public static final String LEGACY_KICKER = "legacy-kick";
+    private static final KickStringWriter KICK_STRING_WRITER = new KickStringWriter();
 
     private static boolean epoll;
 
@@ -128,6 +132,7 @@ public class PipelineUtils
             {
                 // IP_TOS is not supported (Windows XP / Windows Server 2003)
             }
+            ch.config().setOption( ChannelOption.TCP_NODELAY, true );
             ch.config().setAllocator( PooledByteBufAllocator.DEFAULT );
 
             ch.pipeline().addLast( TIMEOUT_HANDLER, new ReadTimeoutHandler( BungeeCord.getInstance().config.getTimeout(), TimeUnit.MILLISECONDS ) );
@@ -136,5 +141,5 @@ public class PipelineUtils
 
             ch.pipeline().addLast( BOSS_HANDLER, new HandlerBoss() );
         }
-    };
+    }
 }

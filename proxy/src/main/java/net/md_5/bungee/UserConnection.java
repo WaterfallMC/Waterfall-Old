@@ -12,11 +12,15 @@ import io.netty.channel.ChannelOption;
 import io.netty.util.internal.PlatformDependent;
 import java.net.InetSocketAddress;
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -58,6 +62,8 @@ import net.md_5.bungee.protocol.packet.Kick;
 import net.md_5.bungee.protocol.packet.PlayerListHeaderFooter;
 import net.md_5.bungee.protocol.packet.PluginMessage;
 import net.md_5.bungee.protocol.packet.SetCompression;
+import net.md_5.bungee.tab.Global;
+import net.md_5.bungee.tab.GlobalPing;
 import net.md_5.bungee.tab.ServerUnique;
 import net.md_5.bungee.tab.TabList;
 import net.md_5.bungee.util.CaseInsensitiveSet;
@@ -70,6 +76,7 @@ public final class UserConnection implements ProxiedPlayer
     @NonNull
     private final ProxyServer bungee;
     @NonNull
+    @Getter
     private final ChannelWrapper ch;
     @Getter
     @NonNull
@@ -105,6 +112,9 @@ public final class UserConnection implements ProxiedPlayer
     private int gamemode;
     @Getter
     private int compressionThreshold = -1;
+    // Used for trying multiple servers in order
+    @Setter
+    private Queue<String> serverJoinQueue;
     /*========================================================================*/
     private final Collection<String> groups = new CaseInsensitiveSet();
     private final Collection<String> permissions = new CaseInsensitiveSet();
@@ -119,6 +129,8 @@ public final class UserConnection implements ProxiedPlayer
     private ClientSettings settings;
     @Getter
     private final Scoreboard serverSentScoreboard = new Scoreboard();
+    @Getter
+    private final Collection<UUID> sentBossBars = new HashSet<>();
     /*========================================================================*/
     @Getter
     private String displayName;
@@ -148,19 +160,20 @@ public final class UserConnection implements ProxiedPlayer
 
         this.displayName = name;
 
-        // Blame Mojang for this one
-        /*switch ( getPendingConnection().getListener().getTabListType() )
-         {
-         case "GLOBAL":
-         tabListHandler = new Global( this );
-         break;
-         case "SERVER":
-         tabListHandler = new ServerUnique( this );
-         break;
-         default:
-         tabListHandler = new GlobalPing( this );
-         break;
-         }*/
+        /*
+        switch ( getPendingConnection().getListener().getTabListType() )
+        {
+            case "GLOBAL":
+                tabListHandler = new Global( this );
+                break;
+            case "SERVER":
+                tabListHandler = new ServerUnique( this );
+                break;
+            default:
+                tabListHandler = new GlobalPing( this );
+                break;
+        }
+         */
         tabListHandler = new ServerUnique( this );
 
         Collection<String> g = bungee.getConfigurationAdapter().getGroups( name );
@@ -174,12 +187,12 @@ public final class UserConnection implements ProxiedPlayer
 
         // No-config FML handshake marker.
         // Set whether the connection has a 1.8 FML marker in the handshake.
-        if (this.getPendingConnection().getExtraDataInHandshake().contains( ForgeConstants.FML_HANDSHAKE_TOKEN )) 
+        if (this.getPendingConnection().getExtraDataInHandshake().contains( ForgeConstants.FML_HANDSHAKE_TOKEN ))
         {
             forgeClientHandler.setFmlTokenInHandshake( true );
 
             // If we IP forward, add the a FML marker to the game profile.
-            if ( BungeeCord.getInstance().config.isIpForward() ) 
+            if ( BungeeCord.getInstance().config.isIpForward() )
             {
                 // Get the user profile.
                 LoginResult profile = pendingConnection.getLoginProfile();
@@ -189,10 +202,10 @@ public final class UserConnection implements ProxiedPlayer
                 Property[] newp = Arrays.copyOf( oldp, oldp.length + 2 );
 
                 // Add a new profile property that specifies that this user is a Forge user.
-                newp[oldp.length - 1] = new Property( ForgeConstants.FML_LOGIN_PROFILE, "true", null );
+                newp[newp.length - 2] = new Property( ForgeConstants.FML_LOGIN_PROFILE, "true", null );
 
                 // If we do not perform the replacement, then the IP Forwarding code in Spigot et. al. will try to split on this prematurely.
-                newp[oldp.length] = new Property( ForgeConstants.EXTRA_DATA, pendingConnection.getExtraDataInHandshake().replaceAll( "\0", "\1"), "" );
+                newp[newp.length - 1] = new Property( ForgeConstants.EXTRA_DATA, pendingConnection.getExtraDataInHandshake().replaceAll( "\0", "\1"), "" );
 
                 // Set the properties in the profile. All done.
                 profile.setProperties( newp );
@@ -215,7 +228,6 @@ public final class UserConnection implements ProxiedPlayer
     public void setDisplayName(String name)
     {
         Preconditions.checkNotNull( name, "displayName" );
-        Preconditions.checkArgument( name.length() <= 16, "Display name cannot be longer than 16 characters" );
         displayName = name;
     }
 
@@ -242,6 +254,27 @@ public final class UserConnection implements ProxiedPlayer
     {
         sendDimensionSwitch();
         connect( target );
+    }
+
+    public ServerInfo updateAndGetNextServer(ServerInfo currentTarget)
+    {
+        if ( serverJoinQueue == null )
+        {
+            serverJoinQueue = new LinkedList<>( getPendingConnection().getListener().getServerPriority() );
+        }
+
+        ServerInfo next = null;
+        while ( !serverJoinQueue.isEmpty() )
+        {
+            ServerInfo candidate = ProxyServer.getInstance().getServerInfo( serverJoinQueue.remove() );
+            if ( !Objects.equal( currentTarget, candidate ) )
+            {
+                next = candidate;
+                break;
+            }
+        }
+
+        return next;
     }
 
     public void connect(ServerInfo info, final Callback<Boolean> callback, final boolean retry)
@@ -296,20 +329,17 @@ public final class UserConnection implements ProxiedPlayer
                     future.channel().close();
                     pendingConnects.remove( target );
 
-                    ServerInfo def = ProxyServer.getInstance().getServers().get( getPendingConnection().getListener().getFallbackServer() );
-                    if ( retry && target != def && ( getServer() == null || def != getServer().getInfo() ) )
+                    ServerInfo def = updateAndGetNextServer( target );
+                    if ( retry && def != null && ( getServer() == null || def != getServer().getInfo() ) )
                     {
                         sendMessage( bungee.getTranslation( "fallback_lobby" ) );
                         connect( def, null, false );
+                    } else if ( dimensionChange )
+                    {
+                        disconnect( bungee.getTranslation( "fallback_kick", future.cause().getClass().getName() ) );
                     } else
                     {
-                        if ( dimensionChange )
-                        {
-                            disconnect( bungee.getTranslation( "fallback_kick", future.cause().getClass().getName() ) );
-                        } else
-                        {
-                            sendMessage( bungee.getTranslation( "fallback_kick", future.cause().getClass().getName() ) );
-                        }
+                        sendMessage( bungee.getTranslation( "fallback_kick", future.cause().getClass().getName() ) );
                     }
                 }
             }
@@ -355,21 +385,7 @@ public final class UserConnection implements ProxiedPlayer
                 getName(), BaseComponent.toLegacyText( reason )
             } );
 
-            // Why do we have to delay this you might ask? Well the simple reason is MOJANG.
-            // Despite many a bug report posted, ever since the 1.7 protocol rewrite, the client STILL has a race condition upon switching protocols.
-            // As such, despite the protocol switch packets already having been sent, there is the possibility of a client side exception
-            // To help combat this we will wait half a second before actually sending the disconnected packet so that whoever is on the other
-            // end has a somewhat better chance of receiving the proper packet.
-            ch.getHandle().eventLoop().schedule( new Runnable()
-            {
-
-                @Override
-                public void run()
-                {
-                    unsafe().sendPacket( new Kick( ComponentSerializer.toString( reason ) ) );
-                    ch.close();
-                }
-            }, 500, TimeUnit.MILLISECONDS );
+            ch.close(new Kick(ComponentSerializer.toString( reason )));
 
             if ( server != null )
             {
@@ -420,8 +436,8 @@ public final class UserConnection implements ProxiedPlayer
     @Override
     public void sendMessage(ChatMessageType position, BaseComponent... message)
     {
-        // Action bar doesn't display the new JSON formattings, legacy works - send it using this for now
-        if ( position == ChatMessageType.ACTION_BAR && pendingConnection.getVersion() >= ProtocolConstants.MINECRAFT_1_8 )
+        // Action bar on 1.8 doesn't display the new JSON formattings, legacy works - send it using this for now
+        if ( position == ChatMessageType.ACTION_BAR && getPendingConnection().getVersion() <= ProtocolConstants.MINECRAFT_1_8 )
         {
             sendMessage( position, ComponentSerializer.toString( new TextComponent( TextComponent.toLegacyText( message ) ) ) );
         } else
@@ -433,8 +449,8 @@ public final class UserConnection implements ProxiedPlayer
     @Override
     public void sendMessage(ChatMessageType position, BaseComponent message)
     {
-        // Action bar doesn't display the new JSON formattings, legacy works - send it using this for now
-        if ( position == ChatMessageType.ACTION_BAR && pendingConnection.getVersion() >= ProtocolConstants.MINECRAFT_1_8 )
+        // Action bar on 1.8 doesn't display the new JSON formattings, legacy works - send it using this for now
+        if ( position == ChatMessageType.ACTION_BAR && getPendingConnection().getVersion() <= ProtocolConstants.MINECRAFT_1_8 )
         {
             sendMessage( position, ComponentSerializer.toString( new TextComponent( TextComponent.toLegacyText( message ) ) ) );
         } else
@@ -544,7 +560,7 @@ public final class UserConnection implements ProxiedPlayer
     @Override
     public Locale getLocale()
     {
-        return ( locale == null && settings != null ) ? locale = Locale.forLanguageTag( settings.getLocale().replaceAll( "_", "-" ) ) : locale;
+        return ( locale == null && settings != null ) ? locale = Locale.forLanguageTag( settings.getLocale().replace( '_', '-' ) ) : locale;
     }
 
     @Override
@@ -571,25 +587,19 @@ public final class UserConnection implements ProxiedPlayer
     @Override
     public void setTabHeader(BaseComponent header, BaseComponent footer)
     {
-        if ( pendingConnection.getVersion() >= ProtocolConstants.MINECRAFT_1_8 )
-        {
-            unsafe().sendPacket( new PlayerListHeaderFooter(
-                    ( header != null ) ? ComponentSerializer.toString( header ) : EMPTY_TEXT,
-                    ( footer != null ) ? ComponentSerializer.toString( footer ) : EMPTY_TEXT
-            ) );
-        }
+        unsafe().sendPacket( new PlayerListHeaderFooter(
+                ( header != null ) ? ComponentSerializer.toString( header ) : EMPTY_TEXT,
+                ( footer != null ) ? ComponentSerializer.toString( footer ) : EMPTY_TEXT
+        ) );
     }
 
     @Override
     public void setTabHeader(BaseComponent[] header, BaseComponent[] footer)
     {
-        if ( pendingConnection.getVersion() >= ProtocolConstants.MINECRAFT_1_8 )
-        {
-            unsafe().sendPacket( new PlayerListHeaderFooter(
-                    ( header != null ) ? ComponentSerializer.toString( header ) : EMPTY_TEXT,
-                    ( footer != null ) ? ComponentSerializer.toString( footer ) : EMPTY_TEXT
-            ) );
-        }
+        unsafe().sendPacket( new PlayerListHeaderFooter(
+                ( header != null ) ? ComponentSerializer.toString( header ) : EMPTY_TEXT,
+                ( footer != null ) ? ComponentSerializer.toString( footer ) : EMPTY_TEXT
+        ) );
     }
 
     @Override
@@ -612,11 +622,17 @@ public final class UserConnection implements ProxiedPlayer
 
     public void setCompressionThreshold(int compressionThreshold)
     {
-        if ( ch.getHandle().isActive() && this.compressionThreshold == -1 && getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_8 )
+        if ( ch.getHandle().isActive() && this.compressionThreshold == -1 )
         {
             this.compressionThreshold = compressionThreshold;
             unsafe.sendPacket( new SetCompression( compressionThreshold ) );
             ch.setCompressionThreshold( compressionThreshold );
         }
+    }
+
+    @Override
+    public boolean isConnected()
+    {
+        return !ch.isClosed();
     }
 }

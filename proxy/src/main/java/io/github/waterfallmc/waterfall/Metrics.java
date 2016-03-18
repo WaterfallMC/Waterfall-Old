@@ -1,4 +1,4 @@
-package net.md_5.bungee;
+package io.github.waterfallmc.waterfall;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,6 +9,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.TimerTask;
+
+import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.ProxyServer;
 
 public class Metrics extends TimerTask
@@ -29,7 +31,7 @@ public class Metrics extends TimerTask
     /**
      * Interval of time to ping (in minutes)
      */
-    final static int PING_INTERVAL = 10;
+    public final static int PING_INTERVAL = 10;
     boolean firstPost = true;
 
     @Override
@@ -71,7 +73,7 @@ public class Metrics extends TimerTask
         }
 
         // Create the url
-        URL url = new URL( BASE_URL + String.format( REPORT_URL, encode( "BungeeCord" ) ) );
+        URL url = new URL( BASE_URL + String.format( REPORT_URL, encode( "Waterfall" ) ) );
 
         // Connect to the website
         URLConnection connection;

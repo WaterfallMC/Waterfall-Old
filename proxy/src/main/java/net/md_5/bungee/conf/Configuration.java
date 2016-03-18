@@ -11,12 +11,15 @@ import java.util.UUID;
 import java.util.logging.Level;
 import javax.imageio.ImageIO;
 import lombok.Getter;
+
+import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.Favicon;
 import net.md_5.bungee.api.ProxyConfig;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ConfigurationAdapter;
 import net.md_5.bungee.api.config.ListenerInfo;
 import net.md_5.bungee.api.config.ServerInfo;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.util.CaseInsensitiveMap;
 import net.md_5.bungee.util.CaseInsensitiveSet;
 
@@ -24,7 +27,7 @@ import net.md_5.bungee.util.CaseInsensitiveSet;
  * Core configuration for the proxy.
  */
 @Getter
-public class Configuration implements ProxyConfig
+public abstract class Configuration implements ProxyConfig
 {
 
     /**
@@ -53,7 +56,7 @@ public class Configuration implements ProxyConfig
     private boolean logCommands;
     private int playerLimit = -1;
     private Collection<String> disabledCommands;
-    private int throttle = 4000;
+    //private int throttle = 4000;
     private boolean ipForward;
     private Favicon favicon;
     private int compressionThreshold = 256;
@@ -81,11 +84,11 @@ public class Configuration implements ProxyConfig
         onlineMode = adapter.getBoolean( "online_mode", onlineMode );
         logCommands = adapter.getBoolean( "log_commands", logCommands );
         playerLimit = adapter.getInt( "player_limit", playerLimit );
-        throttle = adapter.getInt( "connection_throttle", throttle );
+        //throttle = adapter.getInt( "connection_throttle", throttle );
         ipForward = adapter.getBoolean( "ip_forward", ipForward );
         compressionThreshold = adapter.getInt( "network_compression_threshold", compressionThreshold );
 
-        disabledCommands = new CaseInsensitiveSet( (Collection<String>) adapter.getList( "disabled_commands", Arrays.asList( "disabledcommandhere" ) ) );
+        disabledCommands = new CaseInsensitiveSet( adapter.getList( "disabled_commands", Arrays.asList( "disabledcommandhere" ) ) );
 
         Preconditions.checkArgument( listeners != null && !listeners.isEmpty(), "No listeners defined." );
 
@@ -97,26 +100,42 @@ public class Configuration implements ProxyConfig
             servers = new CaseInsensitiveMap<>( newServers );
         } else
         {
-            for ( ServerInfo oldServer : servers.values() )
-            {
-                // Don't allow servers to be removed
-                Preconditions.checkArgument( newServers.containsKey( oldServer.getName() ), "Server %s removed on reload!", oldServer.getName() );
-            }
+            Map<String, ServerInfo> oldServers = this.servers;
+            this.servers = new CaseInsensitiveMap<>(newServers);
 
-            // Add new servers
-            for ( Map.Entry<String, ServerInfo> newServer : newServers.entrySet() )
+            for ( ServerInfo oldServer : oldServers.values() )
             {
-                if ( !servers.containsValue( newServer.getValue() ) )
-                {
-                    servers.put( newServer.getKey(), newServer.getValue() );
+                ServerInfo newServer = newServers.get(oldServer.getName());
+                if ((newServer == null || !oldServer.getAddress().equals(newServer.getAddress())) && !oldServer.getPlayers().isEmpty()) {
+                    BungeeCord.getInstance().getLogger().info("Moving players off of server: " + oldServer.getName());
+                    // The server is being removed, or having it's address changed
+                    for (ProxiedPlayer player : oldServer.getPlayers()) {
+                        ListenerInfo listener = player.getPendingConnection().getListener();
+                        String destinationName = newServers.get(listener.getDefaultServer()) == null ? listener.getDefaultServer() : listener.getFallbackServer();
+                        ServerInfo destination = newServers.get(destinationName);
+                        if (destination == null) {
+                            BungeeCord.getInstance().getLogger().severe("Couldn't find server " + listener.getDefaultServer() + " or " + listener.getFallbackServer() + " to put player " + player.getName() + " on");
+                            player.disconnect(BungeeCord.getInstance().getTranslation("fallback_kick", "Not found on reload"));
+                            continue;
+                        }
+                        player.connect(destination, (success, cause) -> {
+                            if (!success) {
+                                BungeeCord.getInstance().getLogger().log(Level.WARNING, "Failed to connect " + player.getName() + " to " + destination.getName(), cause);
+                                player.disconnect(BungeeCord.getInstance().getTranslation("fallback_kick", cause.getCause().getClass().getName()));
+                            }
+                        });
+                    }
                 }
             }
         }
 
         for ( ListenerInfo listener : listeners )
         {
-            Preconditions.checkArgument( servers.containsKey( listener.getDefaultServer() ), "Default server %s is not defined", listener.getDefaultServer() );
-            Preconditions.checkArgument( servers.containsKey( listener.getFallbackServer() ), "Fallback server %s is not defined", listener.getFallbackServer() );
+            for ( int i = 0; i < listener.getServerPriority().size(); i++ )
+            {
+                String server = listener.getServerPriority().get( i );
+                Preconditions.checkArgument( servers.containsKey( server ), "Server %s (priority %s) is not defined", server, i );
+            }
             for ( String server : listener.getForcedHosts().values() )
             {
                 if ( !servers.containsKey( server ) )

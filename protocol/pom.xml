@@ -4,23 +4,23 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>io.github.projectwaterfall</groupId>
+        <groupId>io.github.waterfallmc</groupId>
         <artifactId>waterfall-parent</artifactId>
-        <version>1.8-SNAPSHOT</version>
+        <version>1.9-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>io.github.projectwaterfall</groupId>
+    <groupId>io.github.waterfallmc</groupId>
     <artifactId>waterfall-protocol</artifactId>
-    <version>1.8-SNAPSHOT</version>
+    <version>1.9-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>BungeeCord-Protocol</name>
+    <name>Waterfall-Protocol</name>
     <description>Minimal implementation of the Minecraft protocol for use in Waterfall</description>
 
     <dependencies>
         <dependency>
-            <groupId>io.github.projectwaterfall</groupId>
+            <groupId>io.github.waterfallmc</groupId>
             <artifactId>waterfall-chat</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>

@@ -20,6 +20,10 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception
     {
+        if (!in.isReadable()) {
+            return;
+        }
+
         Protocol.DirectionData prot = ( server ) ? protocol.TO_SERVER : protocol.TO_CLIENT;
         ByteBuf slice = in.copy(); // Can't slice this one due to EntityMap :(
 
@@ -27,7 +31,7 @@ public class MinecraftDecoder extends MessageToMessageDecoder<ByteBuf>
         {
             int packetId = DefinedPacket.readVarInt( in );
 
-            DefinedPacket packet = prot.createPacket( packetId );
+            DefinedPacket packet = prot.createPacket( packetId, protocolVersion );
             if ( packet != null )
             {
                 packet.read( in, prot.getDirection(), protocolVersion );

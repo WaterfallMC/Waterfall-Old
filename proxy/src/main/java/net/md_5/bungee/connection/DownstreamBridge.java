@@ -29,7 +29,7 @@ import net.md_5.bungee.netty.ChannelWrapper;
 import net.md_5.bungee.netty.PacketHandler;
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.PacketWrapper;
-import net.md_5.bungee.protocol.ProtocolConstants;
+import net.md_5.bungee.protocol.packet.BossBar;
 import net.md_5.bungee.protocol.packet.KeepAlive;
 import net.md_5.bungee.protocol.packet.PlayerListItem;
 import net.md_5.bungee.protocol.packet.ScoreboardObjective;
@@ -90,13 +90,16 @@ public class DownstreamBridge extends PacketHandler
     }
 
     @Override
+    public boolean shouldHandle(PacketWrapper packet) throws Exception
+    {
+        return !server.isObsolete();
+    }
+
+    @Override
     public void handle(PacketWrapper packet) throws Exception
     {
-        if ( !server.isObsolete() )
-        {
-            con.getEntityRewrite().rewriteClientbound( packet.buf, con.getServerEntityId(), con.getClientEntityId() );
-            con.sendPacket( packet );
-        }
+        con.getEntityRewrite().rewriteClientbound( packet.buf, con.getServerEntityId(), con.getClientEntityId() );
+        con.sendPacket( packet );
     }
 
     @Override
@@ -195,6 +198,7 @@ public class DownstreamBridge extends PacketHandler
                 t.setSuffix( team.getSuffix() );
                 t.setFriendlyFire( team.getFriendlyFire() );
                 t.setNameTagVisibility( team.getNameTagVisibility() );
+                t.setCollisionRule( team.getCollisionRule() );
                 t.setColor( team.getColor() );
             }
             if ( team.getPlayers() != null )
@@ -216,7 +220,6 @@ public class DownstreamBridge extends PacketHandler
     @Override
     public void handle(PluginMessage pluginMessage) throws Exception
     {
-        DataInput in = pluginMessage.getStream();
         PluginMessageEvent event = new PluginMessageEvent( con.getServer(), con, pluginMessage.getTag(), pluginMessage.getData().clone() );
 
         if ( bungee.getPluginManager().callEvent( event ).isCancelled() )
@@ -226,28 +229,13 @@ public class DownstreamBridge extends PacketHandler
 
         if ( pluginMessage.getTag().equals( "MC|Brand" ) )
         {
-            if ( con.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_8 )
-            {
-                try
-                {
-                    ByteBuf brand = Unpooled.wrappedBuffer( pluginMessage.getData() );
-                    String serverBrand = DefinedPacket.readString( brand );
-                    brand.release();
-                    brand = ByteBufAllocator.DEFAULT.heapBuffer();
-                    DefinedPacket.writeString( bungee.getName() + " (" + bungee.getVersion() + ")" + " <- " + serverBrand, brand );
-                    pluginMessage.setData( brand.array().clone() );
-                    brand.release();
-                } catch ( Exception ignored )
-                {
-                    // TODO: Remove this
-                    // Older spigot protocol builds sent the brand incorrectly
-                    return;
-                }
-            } else
-            {
-                String serverBrand = new String( pluginMessage.getData(), "UTF-8" );
-                pluginMessage.setData( ( bungee.getName() + " (" + bungee.getVersion() + ")" + " <- " + serverBrand ).getBytes( "UTF-8" ) );
-            }
+            ByteBuf brand = Unpooled.wrappedBuffer( pluginMessage.getData() );
+            String serverBrand = DefinedPacket.readString( brand );
+            brand.release();
+            brand = ByteBufAllocator.DEFAULT.heapBuffer();
+            DefinedPacket.writeString( bungee.getName() + " (" + bungee.getVersion() + ")" + " <- " + serverBrand, brand );
+            pluginMessage.setData( brand.array().clone() );
+            brand.release();
             // changes in the packet are ignored so we need to send it manually
             con.unsafe().sendPacket( pluginMessage );
             throw CancelSendSignal.INSTANCE;
@@ -255,6 +243,8 @@ public class DownstreamBridge extends PacketHandler
 
         if ( pluginMessage.getTag().equals( "BungeeCord" ) )
         {
+            DataInput in = pluginMessage.getStream();
+
             ByteArrayDataOutput out = ByteStreams.newDataOutput();
             String subChannel = in.readUTF();
 
@@ -451,7 +441,7 @@ public class DownstreamBridge extends PacketHandler
                     con.getServer().sendData( "BungeeCord", b );
                 }
             }
-            
+
             throw CancelSendSignal.INSTANCE;
         }
     }
@@ -479,7 +469,6 @@ public class DownstreamBridge extends PacketHandler
     @Override
     public void handle(SetCompression setCompression) throws Exception
     {
-        con.setCompressionThreshold( setCompression.getThreshold() );
         server.getCh().setCompressionThreshold( setCompression.getThreshold() );
     }
 
@@ -497,8 +486,24 @@ public class DownstreamBridge extends PacketHandler
     }
 
     @Override
+    public void handle(BossBar bossBar)
+    {
+        switch ( bossBar.getAction() )
+        {
+            // Handle add bossbar
+            case 0:
+                con.getSentBossBars().add( bossBar.getUuid() );
+                break;
+            // Handle remove bossbar
+            case 1:
+                con.getSentBossBars().remove( bossBar.getUuid() );
+                break;
+        }
+    }
+
+    @Override
     public String toString()
     {
-        return "[" + con.getName() + "] <-> DownstreamBridge <-> [" + server.getInfo().getName() + "]";
+        return "[" + con.getAddress() + "|" + con.getName() + "] <-> DownstreamBridge <-> [" + server.getInfo().getName() + "]";
     }
 }

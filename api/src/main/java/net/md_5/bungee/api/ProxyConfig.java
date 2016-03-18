@@ -59,7 +59,9 @@ public interface ProxyConfig
      * The connection throttle delay.
      */
     @Deprecated
-    int getThrottle();
+    default int getThrottle() {
+        return (int) getJoinThrottle();
+    }
 
     /**
      * Whether the proxy will parse IPs with spigot or not
@@ -79,4 +81,32 @@ public interface ProxyConfig
      * The favicon used for the server ping list.
      */
     Favicon getFaviconObject();
+
+    //
+    // Waterfall Options
+    //
+
+    // Throttling options
+
+    /**
+     * How often tab-complete packets can be sent.
+     * <p/>
+     * Values in milliseconds.
+     */
+    long getTabThrottle();
+
+    /**
+     * How often players can join 
+     */
+    long getJoinThrottle();
+
+    /**
+     * If metrics is enabled
+     */
+    boolean isMetrics();
+
+    /**
+     * Whether we log server list pings
+     */
+    boolean isLogServerListPing();
 }

@@ -2,6 +2,7 @@ package net.md_5.bungee.connection;
 
 import com.google.common.base.Preconditions;
 import net.md_5.bungee.BungeeCord;
+import net.md_5.bungee.ServerConnection;
 import net.md_5.bungee.UserConnection;
 import net.md_5.bungee.Util;
 import net.md_5.bungee.api.ProxyServer;
@@ -30,6 +31,8 @@ public class UpstreamBridge extends PacketHandler
 
     private final ProxyServer bungee;
     private final UserConnection con;
+
+    private long lastTabCompletion = -1;
 
     public UpstreamBridge(ProxyServer bungee, UserConnection con)
     {
@@ -74,11 +77,9 @@ public class UpstreamBridge extends PacketHandler
             } );
             for ( ProxiedPlayer player : con.getServer().getInfo().getPlayers() )
             {
-                if ( player.getPendingConnection().getVersion() >= ProtocolConstants.MINECRAFT_1_8 )
-                {
-                    player.unsafe().sendPacket( packet );
-                }
+                player.unsafe().sendPacket( packet );
             }
+            con.getServer().setObsolete(true);
             con.getServer().disconnect( "Quitting" );
         }
     }
@@ -109,13 +110,21 @@ public class UpstreamBridge extends PacketHandler
     {
         Preconditions.checkArgument( chat.getMessage().length() <= 100, "Chat message too long" ); // Mojang limit, check on updates
 
-        ChatEvent chatEvent = new ChatEvent( con, con.getServer(), chat.getMessage() );
+        ServerConnection server = con.getServer();
+
+        // if we're still connecting just ignore this packet
+        if ( server == null )
+        {
+            throw CancelSendSignal.INSTANCE;
+        }
+
+        ChatEvent chatEvent = new ChatEvent( con, server, chat.getMessage() );
         if ( !bungee.getPluginManager().callEvent( chatEvent ).isCancelled() )
         {
             chat.setMessage( chatEvent.getMessage() );
             if ( !chatEvent.isCommand() || !bungee.getPluginManager().dispatchCommand( con, chat.getMessage().substring( 1 ) ) )
             {
-                con.getServer().unsafe().sendPacket( chat );
+                server.unsafe().sendPacket( chat );
             }
         }
         throw CancelSendSignal.INSTANCE;
@@ -124,6 +133,16 @@ public class UpstreamBridge extends PacketHandler
     @Override
     public void handle(TabCompleteRequest tabComplete) throws Exception
     {
+        if ( bungee.getConfig().getTabThrottle() > 0 )
+        {
+            long now = System.currentTimeMillis();
+            if ( lastTabCompletion > 0 && (now - lastTabCompletion) <= bungee.getConfig().getTabThrottle() )
+            {
+                throw CancelSendSignal.INSTANCE;
+            }
+            lastTabCompletion = now;
+        }
+
         List<String> suggestions = new ArrayList<>();
 
         if ( tabComplete.getCursor().startsWith( "/" ) )
@@ -134,15 +153,15 @@ public class UpstreamBridge extends PacketHandler
         TabCompleteEvent tabCompleteEvent = new TabCompleteEvent( con, con.getServer(), tabComplete.getCursor(), suggestions );
         bungee.getPluginManager().callEvent( tabCompleteEvent );
 
+        if ( tabCompleteEvent.isCancelled() )
+        {
+            throw CancelSendSignal.INSTANCE;
+        }
+
         List<String> results = tabCompleteEvent.getSuggestions();
         if ( !results.isEmpty() )
         {
             con.unsafe().sendPacket( new TabCompleteResponse( results ) );
-            throw CancelSendSignal.INSTANCE;
-        }
-
-        if ( tabCompleteEvent.isCancelled() )
-        {
             throw CancelSendSignal.INSTANCE;
         }
     }
@@ -197,6 +216,6 @@ public class UpstreamBridge extends PacketHandler
     @Override
     public String toString()
     {
-        return "[" + con.getName() + "] -> UpstreamBridge";
+        return "[" + con.getAddress() + "|" + con.getName() + "] -> UpstreamBridge";
     }
 }

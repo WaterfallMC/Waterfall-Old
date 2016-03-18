@@ -10,12 +10,12 @@ public class CommandBungee extends Command
 
     public CommandBungee()
     {
-        super( "bungee" );
+        super("waterfall", null, "bungee");
     }
 
     @Override
     public void execute(CommandSender sender, String[] args)
     {
-        sender.sendMessage( ChatColor.BLUE + "This server is running BungeeCord version " + ProxyServer.getInstance().getVersion() + " by md_5" );
+        sender.sendMessage( ChatColor.BLUE + "This server is running Waterfall version " + ProxyServer.getInstance().getVersion() + " by the Waterfall team" );
     }
 }

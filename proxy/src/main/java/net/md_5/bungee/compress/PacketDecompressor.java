@@ -35,6 +35,7 @@ public class PacketDecompressor extends MessageToMessageDecoder<ByteBuf>
             in.skipBytes( in.readableBytes() );
         } else
         {
+            Preconditions.checkState( size == in.readableBytes(), "Compressed packet size mismatch");
             ByteBuf decompressed = ctx.alloc().directBuffer();
 
             try

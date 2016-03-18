@@ -1,7 +1,5 @@
 package net.md_5.bungee.module;
 
-import com.google.common.io.ByteStreams;
-import com.google.common.io.Files;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;

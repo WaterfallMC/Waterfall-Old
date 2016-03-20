@@ -8,6 +8,7 @@ import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import javax.crypto.SecretKey;
 import com.google.gson.Gson;
@@ -96,12 +97,11 @@ public class InitialHandler extends PacketHandler implements PendingConnection
     private boolean legacy;
     @Getter
     private String extraDataInHandshake = "";
-    private boolean disconnecting;
+    private final AtomicBoolean disconnecting = new AtomicBoolean(false);
 
-    @Override
     public boolean shouldHandle(PacketWrapper packet) throws Exception
     {
-        return !disconnecting;
+        return !disconnecting.get();
     }
 
     private enum State
@@ -532,9 +532,8 @@ public class InitialHandler extends PacketHandler implements PendingConnection
     @Override
     public void disconnect(final BaseComponent... reason)
     {
-        if ( !disconnecting || !ch.isClosed() )
+        if ( disconnecting.compareAndSet(false, true) || !ch.isClosed() )
         {
-            disconnecting = true;
             if ( thisState != State.STATUS && thisState != State.PING ) {
                 ch.close( new Kick( ComponentSerializer.toString( reason ) ) );
             } else {

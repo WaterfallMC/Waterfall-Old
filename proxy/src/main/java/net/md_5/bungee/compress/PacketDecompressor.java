@@ -39,7 +39,6 @@ public class PacketDecompressor extends MessageToMessageDecoder<ByteBuf>
             in.skipBytes( in.readableBytes() );
         } else
         {
-            Preconditions.checkArgument(decompressedSize >= in.readableBytes(), "Decompressed size %s is less than compressed bytes", decompressedSize, in.readableBytes());
             Preconditions.checkArgument(decompressedSize >= compressionThreshold, "Decompressed size %s less than compression threshold %s", decompressedSize, compressionThreshold);
             ByteBuf decompressed = ctx.alloc().directBuffer();
 

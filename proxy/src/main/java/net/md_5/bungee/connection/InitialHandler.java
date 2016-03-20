@@ -10,6 +10,7 @@ import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import javax.crypto.SecretKey;
 
@@ -557,18 +558,16 @@ public class InitialHandler extends PacketHandler implements PendingConnection
         disconnect( TextComponent.fromLegacyText( reason ) );
     }
 
-    @Getter
-    private boolean disconnecting = false;
+    private final AtomicBoolean disconnecting = new AtomicBoolean(false);
 
     public boolean shouldHandle(PacketWrapper p) {
-        return !isDisconnecting();
+        return !disconnecting.get();
     }
 
     @Override
     public void disconnect(final BaseComponent... reason)
     {
-        Preconditions.checkState(!disconnecting, "Already disconnecting");
-        disconnecting = true;
+        Preconditions.checkState(disconnecting.compareAndSet(false, true), "Already disconnecting");
         if ( !ch.isClosed() )
         {
             if (thisState.isAllowKickPackets()) {

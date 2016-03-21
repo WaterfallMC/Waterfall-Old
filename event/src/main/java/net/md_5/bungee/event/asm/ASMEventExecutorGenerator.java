@@ -38,7 +38,8 @@ public class ASMEventExecutorGenerator {
         return writer.toByteArray();
     }
 
-    public static AtomicInteger NEXT_ID = new AtomicInteger(1);
+    private static final AtomicInteger NEXT_ID = new AtomicInteger(1);
+
     public static String generateName() {
         int id = NEXT_ID.getAndIncrement();
         return "net/md_5/bungee/event/asm/generated/GeneratedEventExecutor" + id;

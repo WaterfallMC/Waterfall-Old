@@ -190,26 +190,6 @@ public final class UserConnection implements ProxiedPlayer
         if (this.getPendingConnection().getExtraDataInHandshake().contains( ForgeConstants.FML_HANDSHAKE_TOKEN ))
         {
             forgeClientHandler.setFmlTokenInHandshake( true );
-
-            // If we IP forward, add the a FML marker to the game profile.
-            if ( BungeeCord.getInstance().config.isIpForward() )
-            {
-                // Get the user profile.
-                LoginResult profile = pendingConnection.getLoginProfile();
-
-                // Get the current properties and copy them into a slight bigger away.
-                Property[] oldp = profile.getProperties();
-                Property[] newp = Arrays.copyOf( oldp, oldp.length + 2 );
-
-                // Add a new profile property that specifies that this user is a Forge user.
-                newp[newp.length - 2] = new Property( ForgeConstants.FML_LOGIN_PROFILE, "true", null );
-
-                // If we do not perform the replacement, then the IP Forwarding code in Spigot et. al. will try to split on this prematurely.
-                newp[newp.length - 1] = new Property( ForgeConstants.EXTRA_DATA, pendingConnection.getExtraDataInHandshake().replaceAll( "\0", "\1"), "" );
-
-                // Set the properties in the profile. All done.
-                profile.setProperties( newp );
-            }
         }
     }
 

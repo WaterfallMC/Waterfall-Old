@@ -8,7 +8,18 @@ import java.util.zip.Inflater;
 public class JavaZlib implements BungeeZlib
 {
 
-    private final byte[] buffer = new byte[ 8192 ];
+    private static final ThreadLocal<byte[]> heapInLocal = new ThreadLocal<byte[]>() {
+        @Override
+        protected byte[] initialValue() {
+            return new byte[0];
+        }
+    };
+    private static final ThreadLocal<byte[]> heapOutLocal = new ThreadLocal<byte[]>() {
+        @Override
+        protected byte[] initialValue() {
+            return new byte[8192];
+        }
+    };
     //
     private boolean compress;
     private Deflater deflater;
@@ -45,8 +56,8 @@ public class JavaZlib implements BungeeZlib
     @Override
     public void process(ByteBuf in, ByteBuf out) throws DataFormatException
     {
-        byte[] inData = new byte[ in.readableBytes() ];
-        in.readBytes( inData );
+        byte[] inData = bufToByte( in );
+        byte[] buffer = heapOutLocal.get();
 
         if ( compress )
         {
@@ -55,8 +66,8 @@ public class JavaZlib implements BungeeZlib
 
             while ( !deflater.finished() )
             {
-                int count = deflater.deflate( buffer );
-                out.writeBytes( buffer, 0, count );
+                int count = deflater.deflate(buffer);
+                out.writeBytes(buffer, 0, count );
             }
 
             deflater.reset();
@@ -66,11 +77,24 @@ public class JavaZlib implements BungeeZlib
 
             while ( !inflater.finished() )
             {
-                int count = inflater.inflate( buffer );
-                out.writeBytes( buffer, 0, count );
+                int count = inflater.inflate(buffer);
+                out.writeBytes(buffer, 0, count );
             }
 
             inflater.reset();
         }
+    }
+
+    private byte[] bufToByte(ByteBuf in)
+    {
+        byte[] heapIn = heapInLocal.get();
+        int readableBytes = in.readableBytes();
+        if ( heapIn.length < readableBytes )
+        {
+            heapIn = new byte[ readableBytes ];
+            heapInLocal.set( heapIn );
+        }
+        in.readBytes( heapIn, 0, readableBytes );
+        return heapIn;
     }
 }

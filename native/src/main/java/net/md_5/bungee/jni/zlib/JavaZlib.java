@@ -8,7 +8,12 @@ import java.util.zip.Inflater;
 public class JavaZlib implements BungeeZlib
 {
 
-    private final byte[] buffer = new byte[ 8192 ];
+    private static final ThreadLocal<byte[]> heapOutLocal = new ThreadLocal<byte[]>() {
+        @Override
+        protected byte[] initialValue() {
+            return new byte[8192];
+        }
+    };
     //
     private boolean compress;
     private Deflater deflater;
@@ -47,6 +52,8 @@ public class JavaZlib implements BungeeZlib
     {
         byte[] inData = new byte[ in.readableBytes() ];
         in.readBytes( inData );
+
+        byte[] buffer = heapOutLocal.get();
 
         if ( compress )
         {

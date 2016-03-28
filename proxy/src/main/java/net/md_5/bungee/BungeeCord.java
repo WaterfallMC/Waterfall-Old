@@ -36,19 +36,7 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.util.ResourceLeakDetector;
 import net.md_5.bungee.conf.Configuration;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintStream;
-import java.io.Reader;
-import java.io.Writer;
+import java.io.*;
 import java.net.InetSocketAddress;
 import java.sql.Time;
 import java.text.MessageFormat;
@@ -120,7 +108,8 @@ public class BungeeCord extends ProxyServer
     /**
      * Localization bundle.
      */
-    public ResourceBundle bundle;
+    private ResourceBundle baseBundle;
+    private ResourceBundle customBundle;
     public EventLoopGroup bossEventLoopGroup, workerEventLoopGroup;
     /**
      * locations.yml save thread.
@@ -194,10 +183,18 @@ public class BungeeCord extends ProxyServer
 
         try
         {
-            bundle = ResourceBundle.getBundle( "messages" );
+            baseBundle = ResourceBundle.getBundle( "messages" );
         } catch ( MissingResourceException ex )
         {
-            bundle = ResourceBundle.getBundle( "messages", Locale.ENGLISH );
+            baseBundle = ResourceBundle.getBundle( "messages", Locale.ENGLISH );
+        }
+        File file = new File( "messages.properties" );
+        if ( file.isFile() )
+        {
+            try ( FileReader rd = new FileReader( file ) )
+            {
+                customBundle = new PropertyResourceBundle( rd );
+            }
         }
 
         // This is a workaround for quite possibly the weirdest bug I have ever encountered in my life!
@@ -235,56 +232,6 @@ public class BungeeCord extends ProxyServer
             {
                 logger.info( "Using standard Java compressor. To enable zero copy compression, run on 64 bit Linux" );
             }
-        }
-
-        reloadMessages();
-    }
-
-    @Override
-    public void reloadMessages()
-    {
-        try // Make sure the translation file is up to date
-        {
-            Properties messages = new Properties();
-
-            if ( messagesFile.exists() )
-            {
-                try (Reader reader = new BufferedReader(new InputStreamReader(new FileInputStream(messagesFile), Charsets.UTF_8))) {
-                    messages.load(reader);
-                }
-            }
-
-            // Check for new entries
-            int newEntries = 0;
-            for ( String key : bundle.keySet() )
-            {
-                if ( !messages.containsKey( key ) )
-                {
-                    messages.put( key, bundle.getObject(key) );
-                    newEntries++;
-                }
-            }
-
-            if ( newEntries > 0 )
-            {
-                // We need to save the file to add the new entries
-                try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(messagesFile), Charsets.UTF_8)))
-                {
-                    messages.store(writer, "Waterfall messages, last updated for " + getVersion() );
-                }
-            }
-        } catch ( Exception ex )
-        {
-            getLogger().log( Level.SEVERE, "Could not update messages", ex );
-        }
-
-        // Load the messages from the configuration file
-        try (Reader reader = new BufferedReader(new InputStreamReader(new FileInputStream( messagesFile ), Charsets.UTF_8)))
-        {
-            bundle = new PropertyResourceBundle(reader);
-        } catch ( Exception ex )
-        {
-            getLogger().log( Level.SEVERE, "Could not reload messages", ex );
         }
     }
 
@@ -535,7 +482,7 @@ public class BungeeCord extends ProxyServer
         String translation = "<translation '" + name + "' missing>";
         try
         {
-            String string = bundle.getString( name );
+            String string = customBundle != null && customBundle.containsKey( name ) ? customBundle.getString( name ) : baseBundle.getString( name );
 
             translation = args.length == 0 ? string : MessageFormat.format( string, args );
         } catch ( MissingResourceException ex )
@@ -656,7 +603,7 @@ public class BungeeCord extends ProxyServer
     @Override
     public String getGameVersion()
     {
-        return Joiner.on(", ").join(ProtocolConstants.SUPPORTED_VERSIONS);
+        return Joiner.on( ", " ).join( ProtocolConstants.SUPPORTED_VERSIONS );
     }
 
     @Override

@@ -12,9 +12,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public abstract class DefinedPacket
 {
-    private static final int MAX_STRING_ARRAY_LENGTH = 512;
-    private static final int MAX_BYTE_ARRAY_LENGTH = 256;
-
     public static void writeString(String s, ByteBuf buf)
     {
         Preconditions.checkArgument( s.length() <= Short.MAX_VALUE, "Cannot send string longer than Short.MAX_VALUE (got %s characters)", s.length() );
@@ -37,16 +34,20 @@ public abstract class DefinedPacket
 
     public static void writeArray(byte[] b, ByteBuf buf)
     {
-        Preconditions.checkArgument(b.length <= MAX_BYTE_ARRAY_LENGTH, "Cannot write byte array longer than %s (got %s)", MAX_BYTE_ARRAY_LENGTH, b.length);
+        Preconditions.checkArgument( b.length <= Short.MAX_VALUE, "Cannot send byte array longer than Short.MAX_VALUE (got %s bytes)", b.length );
         writeVarInt( b.length, buf );
         buf.writeBytes( b );
     }
 
     public static byte[] readArray(ByteBuf buf)
     {
-        int len = readVarInt( buf );
-        Preconditions.checkArgument(len <= MAX_BYTE_ARRAY_LENGTH, "Cannot read byte array longer than %s (got %s)", MAX_BYTE_ARRAY_LENGTH, len);
+        return readArray( buf, Short.MAX_VALUE );
+    }
 
+    public static byte[] readArray(ByteBuf buf, int limit)
+    {
+        int len = readVarInt( buf );
+        Preconditions.checkArgument( len <= limit, "Cannot receive byte array longer than %d (got %s bytes)", limit, len );
         byte[] ret = new byte[ len ];
         buf.readBytes( ret );
         return ret;
@@ -54,7 +55,7 @@ public abstract class DefinedPacket
 
     public static void writeStringArray(List<String> s, ByteBuf buf)
     {
-        Preconditions.checkArgument(s.size() <= MAX_STRING_ARRAY_LENGTH, "Cannot write string array longer than %s (got %s)", MAX_BYTE_ARRAY_LENGTH, s.size());
+        Preconditions.checkArgument( s.size() <= 64, "Cannot send string array longer than 64 (got %s strings)", s.size() );
         writeVarInt( s.size(), buf );
         for ( String str : s )
         {
@@ -65,8 +66,8 @@ public abstract class DefinedPacket
     public static List<String> readStringArray(ByteBuf buf)
     {
         int len = readVarInt( buf );
-        Preconditions.checkArgument(len <= MAX_STRING_ARRAY_LENGTH, "Cannot read string array longer than %s (got %s)", MAX_STRING_ARRAY_LENGTH, len);
 
+        Preconditions.checkArgument( len <= 64, "Cannot receive string array longer than 64 (got %s strings)", len );
         List<String> ret = new ArrayList<>( len );
         for ( int i = 0; i < len; i++ )
         {

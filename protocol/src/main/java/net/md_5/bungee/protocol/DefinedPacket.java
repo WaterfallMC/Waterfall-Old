@@ -13,7 +13,7 @@ import java.util.UUID;
 public abstract class DefinedPacket
 {
     private static final int MAX_STRING_ARRAY_LENGTH = 512;
-    private static final int MAX_BYTE_ARRAY_LENGTH = Short.MAX_VALUE;
+    private static final int MAX_BYTE_ARRAY_LENGTH = 256;
 
     public static void writeString(String s, ByteBuf buf)
     {

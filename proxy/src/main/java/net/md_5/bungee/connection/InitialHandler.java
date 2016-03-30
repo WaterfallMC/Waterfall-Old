@@ -319,11 +319,12 @@ public class InitialHandler extends PacketHandler implements PendingConnection
         final InetAddress addresses = ((InetSocketAddress) ch.getHandle().remoteAddress()).getAddress();
         if (BungeeCord.getInstance().getJoinThrottle().throttle(addresses)) {
             if (LOG_THROTTLED_JOINS) {
-                BungeeCord.getInstance().getLogger().log(Level.INFO, "{0} at {1} was join-throttled", new Object[]{this.getName(), addresses.getHostAddress()});
+                BungeeCord.getInstance().getLogger().log(Level.INFO, "{0} at {1} was join-throttled", new Object[]{loginRequest.getData(), addresses.getHostAddress()});
             }
             disconnect(bungee.getTranslation("join_throttle_kick", TimeUnit.MILLISECONDS.toSeconds(BungeeCord.getInstance().getConfig().getJoinThrottle())));
             return;
         }
+
         Preconditions.checkState( thisState == State.USERNAME, "Not expecting USERNAME" );
         this.loginRequest = loginRequest;
 

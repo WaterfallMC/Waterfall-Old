@@ -553,7 +553,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
     @Override
     public void disconnect(final BaseComponent... reason)
     {
-        Preconditions.checkState(disconnecting.compareAndSet(false, true), "Already disconnecting");
+        if (!disconnecting.compareAndSet(false, true)) return;
         if ( !ch.isClosed() )
         {
             if (thisState.isAllowKickPackets()) {

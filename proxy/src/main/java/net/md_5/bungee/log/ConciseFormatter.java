@@ -1,5 +1,7 @@
 package net.md_5.bungee.log;
 
+import org.apache.commons.io.output.StringBuilderWriter;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.DateFormat;
@@ -26,9 +28,9 @@ public class ConciseFormatter extends Formatter
         formatted.append( '\n' );
         if ( record.getThrown() != null )
         {
-            StringWriter writer = new StringWriter();
+            StringBuilderWriter writer = new StringBuilderWriter();
             record.getThrown().printStackTrace( new PrintWriter( writer ) );
-            formatted.append( writer );
+            formatted.append( writer.getBuilder() );
         }
 
         return formatted.toString();

@@ -46,9 +46,10 @@ public class ColouredWriter extends Handler
 
     public void print(String s)
     {
-        for ( ChatColor color : colors )
-        {
-            s = s.replaceAll( "(?i)" + color.toString(), replacements.get( color ) );
+        if (s.indexOf('\u00A7') != -1) {
+            for (ChatColor color : colors) {
+                s = s.replaceAll("(?i)" + color.toString(), replacements.get(color));
+            }
         }
         try
         {

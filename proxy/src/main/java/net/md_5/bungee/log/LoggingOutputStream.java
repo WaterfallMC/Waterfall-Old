@@ -1,11 +1,10 @@
 package net.md_5.bungee.log;
 
-import com.google.common.base.Charsets;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 
 @RequiredArgsConstructor
 public class LoggingOutputStream extends ByteArrayOutputStream
@@ -19,7 +18,7 @@ public class LoggingOutputStream extends ByteArrayOutputStream
     @Override
     public void flush() throws IOException
     {
-        String contents = toString( Charsets.UTF_8.name() );
+        String contents = toString( "UTF-8" );
         super.reset();
         if ( !contents.isEmpty() && !contents.equals( separator ) )
         {

@@ -59,7 +59,7 @@ public enum Protocol
                     TO_CLIENT.registerPacket( 0x01, 0x23, Login.class );
                     TO_CLIENT.registerPacket( 0x02, 0x0F, Chat.class );
                     TO_CLIENT.registerPacket( 0x07, 0x33, Respawn.class );
-                    TO_CLIENT.registerPacket( 0x0C, 0x0C, BossBar.class, true );
+                    TO_CLIENT.registerPacket( 0x0C, 0x0C, BossBar.class, ProtocolConstants.ALL_1_9 );
                     TO_CLIENT.registerPacket( 0x38, 0x2D, PlayerListItem.class ); // PlayerInfo
                     TO_CLIENT.registerPacket( 0x3A, 0x0E, TabCompleteResponse.class );
                     TO_CLIENT.registerPacket( 0x3B, 0x3F, ScoreboardObjective.class );
@@ -69,6 +69,7 @@ public enum Protocol
                     TO_CLIENT.registerPacket( 0x3F, 0x18, PluginMessage.class );
                     TO_CLIENT.registerPacket( 0x40, 0x1A, Kick.class );
                     TO_CLIENT.registerPacket( 0x45, 0x45, Title.class );
+                    //TO_CLIENT.registerPacket( 0x46, SetCompression.class );
                     TO_CLIENT.registerPacket( 0x47, 0x48, PlayerListHeaderFooter.class );
 
                     TO_SERVER.registerPacket( 0x00, 0x0B, KeepAlive.class );
@@ -98,7 +99,7 @@ public enum Protocol
                     TO_CLIENT.registerPacket( 0x00, Kick.class );
                     TO_CLIENT.registerPacket( 0x01, EncryptionRequest.class );
                     TO_CLIENT.registerPacket( 0x02, LoginSuccess.class );
-                    TO_CLIENT.registerPacket( 0x03, SetCompression.class );
+                    TO_CLIENT.registerPacket( 0x03, 0x03, SetCompression.class, ProtocolConstants.ALL_1_8_AND_UP );
 
                     TO_SERVER.registerPacket( 0x00, LoginRequest.class );
                     TO_SERVER.registerPacket( 0x01, EncryptionResponse.class );
@@ -106,7 +107,7 @@ public enum Protocol
             };
     /*========================================================================*/
     public static final int MAX_PACKET_ID = 0xFF;
-    public static List<Integer> supportedVersions = Arrays.asList(
+    public static final List<Integer> supportedVersions = Arrays.asList(
             ProtocolConstants.MINECRAFT_1_7_2,
             ProtocolConstants.MINECRAFT_1_7_6,
             ProtocolConstants.MINECRAFT_1_8,
@@ -133,6 +134,10 @@ public enum Protocol
 
 
         {
+            packetRemap.put( ProtocolConstants.MINECRAFT_1_7_2, new TIntIntHashMap() );
+            packetRemapInv.put( ProtocolConstants.MINECRAFT_1_7_2, new TIntIntHashMap() );
+            packetRemap.put( ProtocolConstants.MINECRAFT_1_7_6, new TIntIntHashMap() );
+            packetRemapInv.put( ProtocolConstants.MINECRAFT_1_7_6, new TIntIntHashMap() );
             packetRemap.put( ProtocolConstants.MINECRAFT_1_8, new TIntIntHashMap() );
             packetRemapInv.put( ProtocolConstants.MINECRAFT_1_8, new TIntIntHashMap() );
             packetRemap.put( ProtocolConstants.MINECRAFT_1_9, new TIntIntHashMap() );
@@ -176,11 +181,19 @@ public enum Protocol
 
         protected final void registerPacket(int id, int newId, Class<? extends DefinedPacket> packetClass)
         {
-            registerPacket( id, newId, packetClass, false );
-
+            // TODO: Duplicated code below - this sucks!
+            registerPacket( id, newId, packetClass, Arrays.asList(
+                    ProtocolConstants.MINECRAFT_1_7_2,
+                    ProtocolConstants.MINECRAFT_1_7_6,
+                    ProtocolConstants.MINECRAFT_1_8,
+                    ProtocolConstants.MINECRAFT_1_9,
+                    ProtocolConstants.MINECRAFT_1_9_1,
+                    ProtocolConstants.MINECRAFT_1_9_2
+            ) );
         }
 
-        protected final void registerPacket(int id, int newId, Class<? extends DefinedPacket> packetClass, boolean newOnly)
+        protected final void registerPacket(int id, int newId, Class<? extends DefinedPacket> packetClass,
+                                            Iterable<Integer> supportedVersions)
         {
             try
             {
@@ -192,14 +205,15 @@ public enum Protocol
             packetClasses[id] = packetClass;
             packetMap.put( packetClass, id );
 
-            if ( !newOnly )
-            {
-                packetRemap.get( ProtocolConstants.MINECRAFT_1_8 ).put( id, id );
-                packetRemapInv.get( ProtocolConstants.MINECRAFT_1_8 ).put( id, id );
+            for (Integer version : supportedVersions) {
+                if (version >= ProtocolConstants.MINECRAFT_1_9) {
+                    packetRemap.get( version ).put( newId, id );
+                    packetRemapInv.get( version ).put( id, newId );
+                } else {
+                    packetRemap.get(version).put(id, id);
+                    packetRemapInv.get(version).put(id, id);
+                }
             }
-
-            packetRemap.get( ProtocolConstants.MINECRAFT_1_9 ).put( newId, id );
-            packetRemapInv.get( ProtocolConstants.MINECRAFT_1_9 ).put( id, newId );
         }
 
         protected final void unregisterPacket(int id)

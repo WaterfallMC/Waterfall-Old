@@ -18,6 +18,16 @@ public class ProtocolConstants
             "1.9.x"
     );
 
+    public static final List<Integer> ALL_1_7 = Arrays.asList( ProtocolConstants.MINECRAFT_1_7_2,
+            ProtocolConstants.MINECRAFT_1_7_6 );
+    public static final List<Integer> ALL_1_8 = Arrays.asList( ProtocolConstants.MINECRAFT_1_8 );
+    public static final List<Integer> ALL_1_8_AND_UP = Arrays.asList( ProtocolConstants.MINECRAFT_1_8,
+            ProtocolConstants.MINECRAFT_1_9, ProtocolConstants.MINECRAFT_1_9_1, ProtocolConstants.MINECRAFT_1_9_2 );
+    public static final List<Integer> ALL_PRE_1_9 = Arrays.asList( ProtocolConstants.MINECRAFT_1_7_2,
+            ProtocolConstants.MINECRAFT_1_7_6, ProtocolConstants.MINECRAFT_1_8 );
+    public static final List<Integer> ALL_1_9 = Arrays.asList( ProtocolConstants.MINECRAFT_1_9,
+            ProtocolConstants.MINECRAFT_1_9_1, ProtocolConstants.MINECRAFT_1_9_2 );
+
     public enum Direction
     {
 

@@ -519,9 +519,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                         if ( ch.getHandle().isActive() )
                         {
                             UserConnection userCon = new UserConnection( bungee, ch, getName(), InitialHandler.this );
-                            if (getVersion() >= ProtocolConstants.MINECRAFT_1_8) {
-                                userCon.setCompressionThreshold(BungeeCord.getInstance().config.getCompressionThreshold());
-                            }
+                            userCon.setCompressionThreshold(BungeeCord.getInstance().config.getCompressionThreshold());
                             userCon.init();
 
                             if ( getVersion() >= ProtocolConstants.MINECRAFT_1_7_6 )

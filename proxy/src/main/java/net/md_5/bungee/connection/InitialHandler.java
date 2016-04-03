@@ -16,6 +16,9 @@ import javax.crypto.SecretKey;
 
 import com.google.gson.Gson;
 import java.util.concurrent.TimeUnit;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -222,7 +225,19 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                     public void done(ProxyPingEvent pingResult, Throwable error)
                     {
                         Gson gson = handshake.getProtocolVersion() == ProtocolConstants.MINECRAFT_1_7_2 ? BungeeCord.getInstance().gsonLegacy : BungeeCord.getInstance().gson;
-                        unsafe.sendPacket( new StatusResponse( gson.toJson( pingResult.getResponse() ) ) );
+                        if (handshake.getProtocolVersion() < ProtocolConstants.MINECRAFT_1_9) {
+                            // Minecraft < 1.9 doesn't send string server descriptions as chat components. Older 1.7
+                            // clients even crash when encountering a chat component instead of a string. To be on the
+                            // safe side, always send legacy descriptions for < 1.9 clients.
+                            JsonElement element = gson.toJsonTree(pingResult.getResponse());
+                            Preconditions.checkArgument(element.isJsonObject(), "Response is not a JSON object");
+                            JsonObject object = element.getAsJsonObject();
+                            object.addProperty("description", pingResult.getResponse().getDescription());
+
+                            unsafe.sendPacket(new StatusResponse(gson.toJson(element)));
+                        } else {
+                            unsafe.sendPacket( new StatusResponse( gson.toJson( pingResult.getResponse() ) ) );
+                        }
                     }
                 };
 

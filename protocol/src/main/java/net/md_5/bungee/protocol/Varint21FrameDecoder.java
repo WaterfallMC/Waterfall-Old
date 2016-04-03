@@ -7,10 +7,18 @@ import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.handler.codec.CorruptedFrameException;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class Varint21FrameDecoder extends ByteToMessageDecoder
 {
 
+    /**
+     * Accept 5 empty packets per second (wait 200 milliseconds)
+     * <p/>
+     * The user may override this by setting 'waterfall.empty_packet_throttle' to the number of milliseconds to wait between throttlse
+     */
+    private static final long EMPTY_PACKET_THROTTLE = Long.parseLong(System.getProperty("waterfall.empty_packet_throttle", Long.toString(1000L / 5)));
+    private AtomicLong lastEmptyPacket = new AtomicLong(0);
     private static boolean DIRECT_WARNING;
 
     @Override
@@ -33,7 +41,16 @@ public class Varint21FrameDecoder extends ByteToMessageDecoder
                 int length = DefinedPacket.readVarInt( Unpooled.wrappedBuffer( buf ) );
                 if ( length == 0 )
                 {
-                    throw new CorruptedFrameException( "Empty Packet!" );
+                    if (EMPTY_PACKET_THROTTLE > 0) {
+                        long currentTime = System.currentTimeMillis();
+                        long lastEmptyPacket = this.lastEmptyPacket.getAndSet(currentTime);
+
+                        if (currentTime - lastEmptyPacket < EMPTY_PACKET_THROTTLE) {
+                            throw new CorruptedFrameException( "Too many empty packets" );
+                        }
+                    } else {
+                        throw new CorruptedFrameException( "Empty Packet!" );
+                    }
                 }
 
                 if ( in.readableBytes() < length )

@@ -109,4 +109,9 @@ public interface ProxyConfig
      * Whether we log server list pings
      */
     boolean isLogServerListPing();
+
+    /**
+     * The supported versions
+     */
+    String getGameVersion();
 }

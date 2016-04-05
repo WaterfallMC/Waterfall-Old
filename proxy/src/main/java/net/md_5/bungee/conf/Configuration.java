@@ -158,6 +158,4 @@ public abstract class Configuration implements ProxyConfig
     {
         return favicon;
     }
-
-    public String getGameVersion();
 }

@@ -5,8 +5,11 @@ import lombok.*;
 import java.io.File;
 import java.util.concurrent.TimeUnit;
 
+import com.google.common.base.Joiner;
+
 import net.md_5.bungee.conf.Configuration;
 import net.md_5.bungee.conf.YamlConfig;
+import net.md_5.bungee.protocol.ProtocolConstants;
 
 public class WaterfallConfiguration extends Configuration {
 
@@ -18,7 +21,7 @@ public class WaterfallConfiguration extends Configuration {
     /**
      * How often players are allowed to send tab throttle.
      * Value in milliseconds.
-     * <p/>
+     * <p>
      * Default is one packet per second.
      */
     private int tabThrottle = (int) TimeUnit.MILLISECONDS.convert(1, TimeUnit.SECONDS);
@@ -26,7 +29,7 @@ public class WaterfallConfiguration extends Configuration {
     /**
      * Join throttle
      * Value in milliseconds.
-     * <p/>
+     * <p>
      * Default is one join per-ip every 4 seconds
      */
     private int joinThrottle = (int) TimeUnit.MILLISECONDS.convert(4, TimeUnit.SECONDS);
@@ -45,6 +48,13 @@ public class WaterfallConfiguration extends Configuration {
      */
     private boolean logServerListPing = false;
 
+    /**
+     * The supported versions displayed to the client
+     * <p>Default is a comma seperated list of supported versions. For example 1.7.x, 1.8.x, 1.9.x</p>
+     */
+    @Getter
+    private String gameVersion;
+
     @Override
     public void load() {
         super.load();
@@ -54,7 +64,8 @@ public class WaterfallConfiguration extends Configuration {
         tabThrottle = config.getInt("throttling.tab_complete", tabThrottle);
         joinThrottle = config.getInt("throttling.join", joinThrottle);
         metrics = config.getBoolean("metrics", metrics);
-        logServerListPing = config.getBoolean( "log_server_list_ping", logServerListPing );
+        logServerListPing = config.getBoolean("log_server_list_ping", logServerListPing);
+        gameVersion = config.getString("game_version", Joiner.on(", ").join(ProtocolConstants.SUPPORTED_VERSIONS));
     }
 
     @Override

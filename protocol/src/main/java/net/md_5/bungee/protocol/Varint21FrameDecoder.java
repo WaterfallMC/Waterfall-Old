@@ -1,5 +1,6 @@
 package net.md_5.bungee.protocol;
 
+import io.github.waterfallmc.waterfall.DirectByteToMessageDecoder;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
@@ -9,7 +10,7 @@ import io.netty.handler.codec.CorruptedFrameException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class Varint21FrameDecoder extends ByteToMessageDecoder
+public class Varint21FrameDecoder extends DirectByteToMessageDecoder
 {
 
     /**
@@ -19,7 +20,6 @@ public class Varint21FrameDecoder extends ByteToMessageDecoder
      */
     private static final long EMPTY_PACKET_THROTTLE = Long.parseLong(System.getProperty("waterfall.empty_packet_throttle", Long.toString(1000L / 5)));
     private AtomicLong lastEmptyPacket = new AtomicLong(0);
-    private static boolean DIRECT_WARNING;
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception
@@ -65,11 +65,7 @@ public class Varint21FrameDecoder extends ByteToMessageDecoder
                         in.skipBytes( length );
                     } else
                     {
-                        if ( !DIRECT_WARNING )
-                        {
-                            DIRECT_WARNING = true;
-                            System.out.println( "Netty is not using direct IO buffers." );
-                        }
+                        new Throwable("Using a " + in.getClass().getTypeName() + ", not a direct byte buf!").printStackTrace();
 
                         // See https://github.com/SpigotMC/BungeeCord/issues/1717
                         ByteBuf dst = ctx.alloc().directBuffer( length );

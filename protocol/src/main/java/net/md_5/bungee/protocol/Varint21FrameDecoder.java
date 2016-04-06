@@ -20,6 +20,7 @@ public class Varint21FrameDecoder extends DirectByteToMessageDecoder
      */
     private static final long EMPTY_PACKET_THROTTLE = Long.parseLong(System.getProperty("waterfall.empty_packet_throttle", Long.toString(1000L / 5)));
     private AtomicLong lastEmptyPacket = new AtomicLong(0);
+    private static boolean DIRECT_WARNING;
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception
@@ -65,7 +66,10 @@ public class Varint21FrameDecoder extends DirectByteToMessageDecoder
                         in.skipBytes( length );
                     } else
                     {
-                        new Throwable("Using a " + in.getClass().getTypeName() + ", not a direct byte buf!").printStackTrace();
+                        if (!DIRECT_WARNING) {
+                            DIRECT_WARNING = true;
+                            System.err.println("Using a " + in.getClass().getTypeName() + ", not a direct byte buf!");
+                        }
 
                         // See https://github.com/SpigotMC/BungeeCord/issues/1717
                         ByteBuf dst = ctx.alloc().directBuffer( length );

@@ -68,7 +68,7 @@ public class Varint21FrameDecoder extends DirectByteToMessageDecoder
                     {
                         if (!DIRECT_WARNING) {
                             DIRECT_WARNING = true;
-                            System.err.println("Using a " + in.getClass().getTypeName() + ", not a direct byte buf!");
+                            new Throwable("Using a " + in.getClass().getTypeName() + ", not a direct byte buf!").printStackTrace();
                         }
 
                         // See https://github.com/SpigotMC/BungeeCord/issues/1717

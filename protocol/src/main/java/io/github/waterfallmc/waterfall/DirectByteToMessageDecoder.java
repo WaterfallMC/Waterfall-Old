@@ -123,12 +123,7 @@ public abstract class DirectByteToMessageDecoder extends ChannelInboundHandlerAd
             buf.readBytes(bytes, readable);
             // Waterfall end
             buf.release();
-            // Waterfall - release bytes after firing read
-            try {
-                ctx.fireChannelRead(bytes);
-            } finally {
-                bytes.release();
-            }
+            ctx.fireChannelRead(bytes);
         } else {
             buf.release();
         }

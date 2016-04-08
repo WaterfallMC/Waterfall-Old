@@ -1,7 +1,7 @@
 package net.md_5.bungee;
 
 import java.net.InetAddress;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 
@@ -9,7 +9,12 @@ import lombok.RequiredArgsConstructor;
 public class ConnectionThrottle
 {
 
-    private final Map<InetAddress, Long> throttle = new HashMap<>();
+    private final Map<InetAddress, Long> throttle = new LinkedHashMap<InetAddress, Long>(100, 0.75f, true) {
+        @Override
+        protected boolean removeEldestEntry(Map.Entry<InetAddress, Long> eldest) {
+            return System.currentTimeMillis() + throttleTime >= eldest.getValue();
+        }
+    };
     private final long throttleTime;
 
     public void unthrottle(InetAddress address)
@@ -19,10 +24,8 @@ public class ConnectionThrottle
 
     public boolean throttle(InetAddress address)
     {
-        Long value = throttle.get( address );
         long currentTime = System.currentTimeMillis();
-
-        throttle.put( address, currentTime );
+        Long value = throttle.put( address, currentTime );
         return value != null && currentTime - value < throttleTime;
     }
 }

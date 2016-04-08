@@ -96,7 +96,7 @@ public interface ProxyConfig
     long getTabThrottle();
 
     /**
-     * How often players can join 
+     * How often players can join
      */
     long getJoinThrottle();
 

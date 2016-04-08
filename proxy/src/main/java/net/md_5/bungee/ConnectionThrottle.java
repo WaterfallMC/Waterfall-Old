@@ -17,11 +17,6 @@ public class ConnectionThrottle
         }
     };
 
-    public void unthrottle(InetAddress address)
-    {
-        throttle.remove( address );
-    }
-
     public boolean throttle(InetAddress address)
     {
         long currentTime = System.currentTimeMillis();

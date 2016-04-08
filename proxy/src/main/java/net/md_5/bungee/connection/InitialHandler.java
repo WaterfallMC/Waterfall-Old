@@ -74,7 +74,7 @@ import net.md_5.bungee.util.BoundedArrayList;
 public class InitialHandler extends PacketHandler implements PendingConnection
 {
 
-    private final ProxyServer bungee;
+    private final BungeeCord bungee;
     private ChannelWrapper ch;
     @Getter
     private final ListenerInfo listener;
@@ -313,9 +313,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                 break;
             case 2:
                 bungee.getLogger().log( Level.INFO, "{0} has connected", this );
+                // Login
                 thisState = State.USERNAME;
                 ch.setProtocol( Protocol.LOGIN );
-                // Login
+
+                if ( bungee.getJoinThrottle().throttle( ( (InetSocketAddress) ch.getHandle().remoteAddress() ).getAddress() ) )
+                {
+                    disconnect( bungee.getTranslation( "join_throttle_kick", TimeUnit.MILLISECONDS.toSeconds( bungee.getConfig().getThrottle() ) ) );
+                }
                 break;
             default:
                 throw new IllegalArgumentException( "Cannot request protocol " + handshake.getRequestedProtocol() );

@@ -1,6 +1,7 @@
 package net.md_5.bungee.connection;
 
 import com.google.common.base.Preconditions;
+import io.github.waterfallmc.waterfall.StringUtil;
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.ServerConnection;
 import net.md_5.bungee.UserConnection;
@@ -112,6 +113,7 @@ public class UpstreamBridge extends PacketHandler
     public void handle(Chat chat) throws Exception
     {
         Preconditions.checkArgument( chat.getMessage().length() <= 100, "Chat message too long" ); // Mojang limit, check on updates
+        Preconditions.checkArgument(!StringUtil.isBlank(chat.getMessage()), "Chat message is empty");
 
         ServerConnection server = con.getServer();
 

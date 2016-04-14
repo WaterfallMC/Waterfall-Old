@@ -205,6 +205,7 @@ public class YamlConfig implements ConfigurationAdapter
         Map<String, Map<String, Object>> base = get( "servers", (Map) Collections.singletonMap( "lobby", new HashMap<>() ) );
         Map<String, ServerInfo> ret = new HashMap<>();
 
+        boolean isGlobalIpForward = net.md_5.bungee.BungeeCord.getInstance().config.isIpForward(); // Waterfall
         for ( Map.Entry<String, Map<String, Object>> entry : base.entrySet() )
         {
             Map<String, Object> val = entry.getValue();
@@ -214,6 +215,10 @@ public class YamlConfig implements ConfigurationAdapter
             boolean restricted = get( "restricted", false, val );
             InetSocketAddress address = Util.getAddr( addr );
             ServerInfo info = ProxyServer.getInstance().constructServerInfo( name, address, motd, restricted );
+            // Waterfall start
+            info.setForwardClientDetails(this.get("ip-forwarding", isGlobalIpForward, val));
+            info.setSharedSecret(this.get("shared-secret", null, val));
+            // Waterfall end
             ret.put( name, info );
         }
 

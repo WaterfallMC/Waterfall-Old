@@ -67,8 +67,7 @@ public class LegacyDecoder extends DirectByteToMessageDecoder
         } finally {
             if (!handled) {
                 in.resetReaderIndex();
-                ctx.pipeline().remove("legacy-decoder");
-                ctx.fireChannelRead(in);
+                ctx.pipeline().remove(this);
             }
         }
     }

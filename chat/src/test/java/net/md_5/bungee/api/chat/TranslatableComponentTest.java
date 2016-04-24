@@ -7,7 +7,9 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-public class TranslatableComponentTest {
+public class TranslatableComponentTest
+{
+
     @Test
     public void testMissingPlaceholdersAdded()
     {

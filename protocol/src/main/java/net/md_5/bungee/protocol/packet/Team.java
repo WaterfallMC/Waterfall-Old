@@ -51,11 +51,12 @@ public class Team extends DefinedPacket
             suffix = readString( buf );
             friendlyFire = buf.readByte();
             if (protocolVersion >= ProtocolConstants.MINECRAFT_1_8) {
-                nameTagVisibility = readString( buf );
-                if (protocolVersion >= ProtocolConstants.MINECRAFT_1_9) {
-                    collisionRule = readString(buf);
-                }
-                color = buf.readByte();
+            nameTagVisibility = readString( buf );
+            if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_9 )
+            {
+                collisionRule = readString( buf );
+            }
+            color = buf.readByte();
             }
         }
         if ( mode == 0 || mode == 3 || mode == 4 )
@@ -81,11 +82,12 @@ public class Team extends DefinedPacket
             writeString( suffix, buf );
             buf.writeByte( friendlyFire );
             if (protocolVersion >= ProtocolConstants.MINECRAFT_1_8) {
-                writeString(nameTagVisibility, buf);
-                if (protocolVersion >= ProtocolConstants.MINECRAFT_1_9) {
-                    writeString(collisionRule, buf);
-                }
-                buf.writeByte(color);
+            writeString( nameTagVisibility, buf );
+            if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_9 )
+            {
+                writeString( collisionRule, buf );
+            }
+            buf.writeByte(color);
             }
         }
         if ( mode == 0 || mode == 3 || mode == 4 )

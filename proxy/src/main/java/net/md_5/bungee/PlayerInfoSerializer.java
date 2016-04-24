@@ -1,5 +1,8 @@
 package net.md_5.bungee;
 
+import java.lang.reflect.Type;
+import java.util.UUID;
+
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -7,10 +10,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import net.md_5.bungee.api.ServerPing;
 
-import java.lang.reflect.Type;
-import java.util.UUID;
+import net.md_5.bungee.api.ServerPing;
 
 public class PlayerInfoSerializer implements JsonSerializer<ServerPing.PlayerInfo>, JsonDeserializer<ServerPing.PlayerInfo>
 {

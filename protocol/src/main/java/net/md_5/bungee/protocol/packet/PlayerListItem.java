@@ -1,14 +1,14 @@
 package net.md_5.bungee.protocol.packet;
 
-import net.md_5.bungee.protocol.DefinedPacket;
-import io.netty.buffer.ByteBuf;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import net.md_5.bungee.protocol.AbstractPacketHandler;
-import net.md_5.bungee.protocol.ProtocolConstants;
+import lombok.*;
 
 import java.util.UUID;
+
+import io.netty.buffer.ByteBuf;
+
+import net.md_5.bungee.protocol.AbstractPacketHandler;
+import net.md_5.bungee.protocol.DefinedPacket;
+import net.md_5.bungee.protocol.ProtocolConstants;
 
 @Data
 @NoArgsConstructor
@@ -31,54 +31,48 @@ public class PlayerListItem extends DefinedPacket
             item.ping = buf.readShort();
         } else
         {
-            action = Action.values()[ DefinedPacket.readVarInt( buf )];
-            items = new Item[ DefinedPacket.readVarInt( buf ) ];
-            for ( int i = 0; i < items.length; i++ )
-            {
-                Item item = items[ i ] = new Item();
-                item.setUuid( DefinedPacket.readUUID( buf ) );
-                switch ( action )
-                {
-                    case ADD_PLAYER:
-                        item.username = DefinedPacket.readString( buf );
-                        item.properties = new String[ DefinedPacket.readVarInt( buf ) ][];
-                        for ( int j = 0; j < item.properties.length; j++ )
-                        {
-                            String name = DefinedPacket.readString( buf );
-                            String value = DefinedPacket.readString( buf );
-                            if ( buf.readBoolean() )
-                            {
-                                item.properties[ j] = new String[]
-                                {
-                                    name, value, DefinedPacket.readString( buf )
-                                };
-                            } else
-                            {
-                                item.properties[ j ] = new String[]
-                                {
-                                    name, value
-                                };
-                            }
+        action = Action.values()[DefinedPacket.readVarInt( buf )];
+        items = new Item[ DefinedPacket.readVarInt( buf ) ];
+        for ( int i = 0; i < items.length; i++ )
+        {
+            Item item = items[i] = new Item();
+            item.setUuid( DefinedPacket.readUUID( buf ) );
+            switch ( action ) {
+                case ADD_PLAYER:
+                    item.username = DefinedPacket.readString(buf);
+                    item.properties = new String[DefinedPacket.readVarInt(buf)][];
+                    for (int j = 0; j < item.properties.length; j++) {
+                        String name = DefinedPacket.readString(buf);
+                        String value = DefinedPacket.readString(buf);
+                        if (buf.readBoolean()) {
+                            item.properties[j] = new String[]
+                                    {
+                                            name, value, DefinedPacket.readString(buf)
+                                    };
+                        } else {
+                            item.properties[j] = new String[]
+                                    {
+                                            name, value
+                                    };
                         }
-                        item.gamemode = DefinedPacket.readVarInt( buf );
-                        item.ping = DefinedPacket.readVarInt( buf );
-                        if ( buf.readBoolean() )
-                        {
-                            item.displayName = DefinedPacket.readString( buf );
-                        }
-                        break;
-                    case UPDATE_GAMEMODE:
-                        item.gamemode = DefinedPacket.readVarInt( buf );
-                        break;
-                    case UPDATE_LATENCY:
-                        item.ping = DefinedPacket.readVarInt( buf );
-                        break;
-                    case UPDATE_DISPLAY_NAME:
-                        if ( buf.readBoolean() )
-                        {
-                            item.displayName = DefinedPacket.readString( buf );
-                        }
-                }
+                    }
+                    item.gamemode = DefinedPacket.readVarInt(buf);
+                    item.ping = DefinedPacket.readVarInt(buf);
+                    if (buf.readBoolean()) {
+                        item.displayName = DefinedPacket.readString(buf);
+                    }
+                    break;
+                case UPDATE_GAMEMODE:
+                    item.gamemode = DefinedPacket.readVarInt(buf);
+                    break;
+                case UPDATE_LATENCY:
+                    item.ping = DefinedPacket.readVarInt(buf);
+                    break;
+                case UPDATE_DISPLAY_NAME:
+                    if (buf.readBoolean()) {
+                        item.displayName = DefinedPacket.readString(buf);
+                    }
+            }
             }
         }
     }
@@ -106,12 +100,12 @@ public class PlayerListItem extends DefinedPacket
                         DefinedPacket.writeVarInt( item.properties.length, buf );
                         for ( String[] prop : item.properties )
                         {
-                            DefinedPacket.writeString( prop[ 0], buf );
-                            DefinedPacket.writeString( prop[ 1], buf );
+                            DefinedPacket.writeString( prop[0], buf );
+                            DefinedPacket.writeString( prop[1], buf );
                             if ( prop.length >= 3 )
                             {
                                 buf.writeBoolean( true );
-                                DefinedPacket.writeString( prop[ 2], buf );
+                                DefinedPacket.writeString( prop[2], buf );
                             } else
                             {
                                 buf.writeBoolean( false );

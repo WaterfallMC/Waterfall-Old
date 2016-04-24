@@ -1,9 +1,10 @@
 package net.md_5.bungee.entitymap;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import lombok.*;
+
 import io.netty.buffer.ByteBuf;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.ProtocolConstants;
 
@@ -45,20 +46,17 @@ public abstract class EntityMap
         {
             if ( varint )
             {
-                clientboundVarInts[ id ] = true;
+                clientboundVarInts[id] = true;
             } else
             {
-                clientboundInts[ id ] = true;
+                clientboundInts[id] = true;
             }
+        } else if ( varint )
+        {
+            serverboundVarInts[id] = true;
         } else
         {
-            if ( varint )
-            {
-                serverboundVarInts[ id ] = true;
-            } else
-            {
-                serverboundInts[ id ] = true;
-            }
+            serverboundInts[id] = true;
         }
     }
 
@@ -114,10 +112,10 @@ public abstract class EntityMap
             return;
         }
 
-        if ( ints[ packetId ] )
+        if ( ints[packetId] )
         {
             rewriteInt( packet, oldId, newId, readerIndex + packetIdLength );
-        } else if ( varints[ packetId ] )
+        } else if ( varints[packetId] )
         {
             rewriteVarInt( packet, oldId, newId, readerIndex + packetIdLength );
         }

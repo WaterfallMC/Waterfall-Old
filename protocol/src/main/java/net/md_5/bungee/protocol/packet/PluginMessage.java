@@ -1,18 +1,19 @@
 package net.md_5.bungee.protocol.packet;
 
-import com.google.common.base.Preconditions;
-import net.md_5.bungee.protocol.DefinedPacket;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
+import lombok.*;
+
 import java.io.ByteArrayInputStream;
 import java.io.DataInput;
 import java.io.DataInputStream;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import net.md_5.bungee.protocol.MinecraftInput;
+
+import com.google.common.base.Preconditions;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+
 import net.md_5.bungee.protocol.AbstractPacketHandler;
+import net.md_5.bungee.protocol.DefinedPacket;
+import net.md_5.bungee.protocol.MinecraftInput;
 import net.md_5.bungee.protocol.ProtocolConstants;
 
 @Data
@@ -39,10 +40,10 @@ public class PluginMessage extends DefinedPacket
             data = readArrayLegacy( buf );
         } else
         {
-            int maxSize = direction == ProtocolConstants.Direction.TO_SERVER ? Short.MAX_VALUE : 0x100000;
-            Preconditions.checkArgument(buf.readableBytes() < maxSize);
-            data = new byte[ buf.readableBytes() ];
-            buf.readBytes( data );
+        int maxSize = direction == ProtocolConstants.Direction.TO_SERVER ? Short.MAX_VALUE : 0x100000;
+        Preconditions.checkArgument( buf.readableBytes() < maxSize );
+        data = new byte[ buf.readableBytes() ];
+        buf.readBytes( data );
         }
     }
 

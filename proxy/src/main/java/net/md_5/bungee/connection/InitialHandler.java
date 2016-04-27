@@ -317,6 +317,9 @@ public class InitialHandler extends PacketHandler implements PendingConnection
 
                 if ( bungee.getJoinThrottle() != null && bungee.getJoinThrottle().throttle( getAddress().getAddress() ) )
                 {
+                    if (LOG_THROTTLED_JOINS) {
+                        BungeeCord.getInstance().getLogger().log(Level.INFO, "{0} was join-throttled", addresses.getHostAddress());
+                    }
                     disconnect( bungee.getTranslation( "join_throttle_kick", TimeUnit.MILLISECONDS.toSeconds( bungee.getConfig().getThrottle() ) ) );
                 }
                 break;
@@ -330,19 +333,6 @@ public class InitialHandler extends PacketHandler implements PendingConnection
     @Override
     public void handle(LoginRequest loginRequest) throws Exception
     {
-        /*
-         * should only be used if its definitely not a ping / status request
-         * otherwise pings after status requests are blocked
-         */
-        final InetAddress addresses = ((InetSocketAddress) ch.getHandle().remoteAddress()).getAddress();
-        if (BungeeCord.getInstance().getJoinThrottle().throttle(addresses)) {
-            if (LOG_THROTTLED_JOINS) {
-                BungeeCord.getInstance().getLogger().log(Level.INFO, "{0} at {1} was join-throttled", new Object[]{loginRequest.getData(), addresses.getHostAddress()});
-            }
-            disconnect(bungee.getTranslation("join_throttle_kick", TimeUnit.MILLISECONDS.toSeconds(BungeeCord.getInstance().getConfig().getJoinThrottle())));
-            return;
-        }
-
         Preconditions.checkState( thisState == State.USERNAME, "Not expecting USERNAME" );
         this.loginRequest = loginRequest;
 

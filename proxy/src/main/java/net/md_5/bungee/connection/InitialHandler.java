@@ -318,7 +318,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                 if ( bungee.getJoinThrottle() != null && bungee.getJoinThrottle().throttle( getAddress().getAddress() ) )
                 {
                     if (LOG_THROTTLED_JOINS) {
-                        BungeeCord.getInstance().getLogger().log(Level.INFO, "{0} was join-throttled", getAddress().getHostString();
+                        BungeeCord.getInstance().getLogger().log(Level.INFO, "{0} was join-throttled", getAddress().getHostString());
                     }
                     disconnect( bungee.getTranslation( "join_throttle_kick", TimeUnit.MILLISECONDS.toSeconds( bungee.getConfig().getThrottle() ) ) );
                 }

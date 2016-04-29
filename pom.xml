@@ -98,7 +98,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.14.8</version>
+            <version>1.16.8</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
@@ -154,8 +154,8 @@
                                     <action>
                                         <execute>
                                             <runOnIncremental>false</runOnIncremental>
-                                        </execute >
-                                     </action>
+                                        </execute>
+                                    </action>
                                 </pluginExecution>
                             </pluginExecutions>
                         </lifecycleMappingMetadata>
@@ -204,7 +204,6 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-deploy-plugin</artifactId>
-                        <version>2.8.2</version>
                     </plugin>
                 </plugins>
             </build>

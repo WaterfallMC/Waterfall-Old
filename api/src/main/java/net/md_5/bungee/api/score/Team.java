@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
-import io.github.waterfallmc.waterfall.utils.FastIntern;
 import io.github.waterfallmc.waterfall.utils.LowMemorySet;
 
 @Data
@@ -31,7 +30,7 @@ public class Team
 
     public void addPlayer(String name)
     {
-        players.add(FastIntern.intern(name));
+        players.add(name.intern());
     }
 
     public void removePlayer(String name)

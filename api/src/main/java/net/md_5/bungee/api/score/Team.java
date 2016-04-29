@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
-import io.github.waterfallmc.waterfall.utils.FastIntern;
 import io.github.waterfallmc.waterfall.utils.LowMemorySet;
 
 @Data
@@ -22,7 +21,8 @@ public class Team
     private String nameTagVisibility;
     private String collisionRule;
     private byte color;
-    private Set<String> players = LowMemorySet.create();
+    private Set<String> players = LowMemorySet.create(); // TODO: Consider creating a dummy set instead,
+                                                         // since we don't actually use this
 
     public Collection<String> getPlayers()
     {
@@ -31,7 +31,7 @@ public class Team
 
     public void addPlayer(String name)
     {
-        players.add(FastIntern.intern(name));
+        players.add(name.intern());
     }
 
     public void removePlayer(String name)

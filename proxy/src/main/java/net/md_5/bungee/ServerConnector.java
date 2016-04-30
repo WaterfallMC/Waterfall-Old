@@ -6,6 +6,7 @@ import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Queue;
 import java.util.Set;
@@ -229,15 +230,15 @@ public class ServerConnector extends PacketHandler
 
             user.unsafe().sendPacket( modLogin );
 
+            String brandString = bungee.getName() + " (" + bungee.getVersion() + ")";
+
             if ( user.getPendingConnection().getVersion() < ProtocolConstants.MINECRAFT_1_8 )
             {
-                MinecraftOutput out = new MinecraftOutput();
-                out.writeStringUTF8WithoutLengthHeaderBecauseDinnerboneStuffedUpTheMCBrandPacket( ProxyServer.getInstance().getName() + " (" + ProxyServer.getInstance().getVersion() + ")" );
-                user.unsafe().sendPacket( new PluginMessage( "MC|Brand", out.toArray(), handshakeHandler.isServerForge() ) );
+                user.unsafe().sendPacket( new PluginMessage( "MC|Brand", brandString.getBytes(StandardCharsets.UTF_8), handshakeHandler.isServerForge() ) );
             } else
             {
                 ByteBuf brand = ByteBufAllocator.DEFAULT.heapBuffer();
-                DefinedPacket.writeString( bungee.getName() + " (" + bungee.getVersion() + ")", brand );
+                DefinedPacket.writeString( brandString, brand );
                 user.unsafe().sendPacket( new PluginMessage( "MC|Brand", brand.array().clone(), handshakeHandler.isServerForge() ) );
                 brand.release();
             }

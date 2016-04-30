@@ -21,7 +21,8 @@ public class Team
     private String nameTagVisibility;
     private String collisionRule;
     private byte color;
-    private Set<String> players = LowMemorySet.create();
+    private Set<String> players = LowMemorySet.create(); // TODO: Consider creating a dummy set instead,
+                                                         // since we don't actually use this
 
     public Collection<String> getPlayers()
     {

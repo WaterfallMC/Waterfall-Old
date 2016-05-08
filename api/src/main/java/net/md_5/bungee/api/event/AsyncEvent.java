@@ -17,10 +17,12 @@ import net.md_5.bungee.api.plugin.Plugin;
  * Represents an event which depends on the result of asynchronous operations.
  *
  * @param <T> Type of this event
+ * @deprecated Prefer {@link io.github.waterfallmc.waterfall.event.DelayableEvent} instead
  */
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
+@Deprecated
 public class AsyncEvent<T> extends Event
 {
 

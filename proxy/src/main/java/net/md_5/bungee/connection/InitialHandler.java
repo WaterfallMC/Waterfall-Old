@@ -248,7 +248,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
             ( (BungeeServerInfo) forced ).ping( pingBack, handshake.getProtocolVersion() );
         } else
         {
-            int protocol = ( Protocol.supportedVersions.contains( handshake.getProtocolVersion() ) ) ? handshake.getProtocolVersion() : bungee.getProtocolVersion();
+            int protocol = ( ProtocolConstants.SUPPORTED_VERSION_IDS.contains( handshake.getProtocolVersion() ) ) ? handshake.getProtocolVersion() : bungee.getProtocolVersion();
             pingBack.done( new ServerPing(
                     new ServerPing.Protocol( bungee.getName() + " " + bungee.getGameVersion(), protocol ),
                     new ServerPing.Players( listener.getMaxPlayers(), bungee.getOnlineCount(), null ),
@@ -336,7 +336,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
         Preconditions.checkState( thisState == State.USERNAME, "Not expecting USERNAME" );
         this.loginRequest = loginRequest;
 
-        if ( !Protocol.supportedVersions.contains( handshake.getProtocolVersion() ) )
+        if ( !ProtocolConstants.SUPPORTED_VERSION_IDS.contains( handshake.getProtocolVersion() ) )
         {
             disconnect( bungee.getTranslation( "outdated_server" ) );
             return;

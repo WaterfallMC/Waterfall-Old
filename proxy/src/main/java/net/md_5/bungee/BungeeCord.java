@@ -2,7 +2,6 @@ package net.md_5.bungee;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jline.console.ConsoleReader;
-import lombok.*;
 
 import java.io.File;
 import java.io.FileReader;
@@ -49,6 +48,9 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.util.ResourceLeakDetector;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.Synchronized;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.Favicon;
 import net.md_5.bungee.api.ProxyServer;
@@ -82,7 +84,6 @@ import net.md_5.bungee.log.LoggingOutputStream;
 import net.md_5.bungee.module.ModuleManager;
 import net.md_5.bungee.netty.PipelineUtils;
 import net.md_5.bungee.protocol.DefinedPacket;
-import net.md_5.bungee.protocol.Protocol;
 import net.md_5.bungee.protocol.ProtocolConstants;
 import net.md_5.bungee.protocol.packet.Chat;
 import net.md_5.bungee.protocol.packet.PluginMessage;
@@ -610,7 +611,7 @@ public class BungeeCord extends ProxyServer
     @Override
     public int getProtocolVersion()
     {
-        return Protocol.supportedVersions.get( Protocol.supportedVersions.size() - 1 );
+        return ProtocolConstants.SUPPORTED_VERSION_IDS.get( ProtocolConstants.SUPPORTED_VERSION_IDS.size() - 1 );
     }
 
     @Override

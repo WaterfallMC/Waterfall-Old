@@ -260,6 +260,10 @@ public final class UserConnection implements ProxiedPlayer
 
     public void connect(ServerInfo info, final Callback<Boolean> callback, final boolean retry)
     {
+        connect(info, callback, retry, 5000); // todo: configurable
+    }
+
+    public void connect(ServerInfo info, final Callback<Boolean> callback, final boolean retry, final int timeout) {
         Preconditions.checkNotNull( info, "info" );
 
         ServerConnectEvent event = new ServerConnectEvent( this, info );
@@ -328,7 +332,7 @@ public final class UserConnection implements ProxiedPlayer
                     if ( retry && def != null && ( getServer() == null || def != getServer().getInfo() ) )
                     {
                         sendMessage( bungee.getTranslation( "fallback_lobby" ) );
-                        connect( def, null, false );
+                        connect( def, null, false, timeout );
                     } else if ( dimensionChange )
                     {
                         disconnect( bungee.getTranslation( "fallback_kick", future.cause().getClass().getName() ) );
@@ -343,7 +347,7 @@ public final class UserConnection implements ProxiedPlayer
                 .channel( PipelineUtils.getChannel() )
                 .group( ch.getHandle().eventLoop() )
                 .handler( initializer )
-                .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000 ) // TODO: Configurable
+                .option( ChannelOption.CONNECT_TIMEOUT_MILLIS, timeout )
                 .remoteAddress( target.getAddress() );
         // Windows is bugged, multi homed users will just have to live with random connecting IPs
         if ( getPendingConnection().getListener().isSetLocalAddress() && !PlatformDependent.isWindows() )

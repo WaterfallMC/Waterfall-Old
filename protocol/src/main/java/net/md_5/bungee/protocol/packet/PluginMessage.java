@@ -5,10 +5,13 @@ import lombok.*;
 import java.io.ByteArrayInputStream;
 import java.io.DataInput;
 import java.io.DataInputStream;
+import java.nio.ByteBuffer;
 
 import com.google.common.base.Preconditions;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufInputStream;
+import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 
 import net.md_5.bungee.protocol.AbstractPacketHandler;
@@ -23,8 +26,21 @@ import net.md_5.bungee.protocol.ProtocolConstants;
 public class PluginMessage extends DefinedPacket
 {
 
+    public PluginMessage(String tag, ByteBuf data, boolean allowExtendedPacket) {
+        this(tag, ByteBufUtil.getBytes(data), allowExtendedPacket);
+    }
+
     private String tag;
     private byte[] data;
+
+    public void setData(byte[] data) {
+        this.data = Preconditions.checkNotNull(data, "Null data");
+    }
+
+    public void setData(ByteBuf buf) {
+        Preconditions.checkNotNull(buf, "Null buffer");
+        setData(ByteBufUtil.getBytes(buf));
+    }
 
     /**
      * Allow this packet to be sent as an "extended" packet.

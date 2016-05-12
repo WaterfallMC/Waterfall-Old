@@ -1,6 +1,7 @@
 package net.md_5.bungee.protocol;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 import java.nio.charset.Charset;
 import java.util.Arrays;
@@ -17,15 +18,7 @@ public class MinecraftOutput
 
     public byte[] toArray()
     {
-        if ( buf.hasArray() )
-        {
-            return Arrays.copyOfRange( buf.array(), buf.arrayOffset(), buf.arrayOffset() + buf.writerIndex() );
-        } else
-        {
-            byte[] b = new byte[ buf.writerIndex() ];
-            buf.readBytes( b );
-            return b;
-        }
+        return ByteBufUtil.getBytes(buf, 0, buf.writerIndex());
     }
 
     public MinecraftOutput writeByte(byte b)

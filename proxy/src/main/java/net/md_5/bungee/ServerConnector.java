@@ -239,7 +239,7 @@ public class ServerConnector extends PacketHandler
             {
                 ByteBuf brand = ByteBufAllocator.DEFAULT.heapBuffer();
                 DefinedPacket.writeString( brandString, brand );
-                user.unsafe().sendPacket( new PluginMessage( "MC|Brand", brand.array().clone(), handshakeHandler.isServerForge() ) );
+                user.unsafe().sendPacket( new PluginMessage( "MC|Brand", brand, handshakeHandler.isServerForge() ) );
                 brand.release();
             }
         } else

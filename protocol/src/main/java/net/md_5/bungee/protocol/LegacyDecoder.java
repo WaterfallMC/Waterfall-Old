@@ -1,18 +1,18 @@
 package net.md_5.bungee.protocol;
 
-import io.github.waterfallmc.waterfall.DirectByteToMessageDecoder;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.ByteToMessageDecoder;
 import java.util.List;
 
 import com.google.common.base.Charsets;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.ByteToMessageDecoder;
+
 import net.md_5.bungee.protocol.packet.LegacyHandshake;
 import net.md_5.bungee.protocol.packet.LegacyPing;
 
-public class LegacyDecoder extends DirectByteToMessageDecoder
+public class LegacyDecoder extends ByteToMessageDecoder
 {
     private boolean triedForMoreData;
 

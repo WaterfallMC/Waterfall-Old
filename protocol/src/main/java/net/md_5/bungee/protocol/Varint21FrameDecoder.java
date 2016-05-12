@@ -1,16 +1,15 @@
 package net.md_5.bungee.protocol;
 
-import io.github.waterfallmc.waterfall.DirectByteToMessageDecoder;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.handler.codec.CorruptedFrameException;
 
-import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
-
-public class Varint21FrameDecoder extends DirectByteToMessageDecoder
+public class Varint21FrameDecoder extends ByteToMessageDecoder
 {
 
     /**

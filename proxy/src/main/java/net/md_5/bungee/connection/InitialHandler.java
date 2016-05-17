@@ -58,6 +58,17 @@ import net.md_5.bungee.protocol.packet.EncryptionRequest;
 import net.md_5.bungee.protocol.packet.EncryptionResponse;
 import net.md_5.bungee.protocol.packet.Handshake;
 import net.md_5.bungee.protocol.packet.Kick;
+import net.md_5.bungee.protocol.ProtocolConstants;
+import net.md_5.bungee.protocol.packet.Handshake;
+import net.md_5.bungee.protocol.packet.PluginMessage;
+import net.md_5.bungee.protocol.packet.EncryptionResponse;
+import net.md_5.bungee.protocol.packet.EncryptionRequest;
+import net.md_5.bungee.protocol.packet.Kick;
+import net.md_5.bungee.api.AbstractReconnectHandler;
+import net.md_5.bungee.api.event.PlayerHandshakeEvent;
+import net.md_5.bungee.api.event.PreLoginEvent;
+import net.md_5.bungee.jni.cipher.BungeeCipher;
+import net.md_5.bungee.protocol.Protocol;
 import net.md_5.bungee.protocol.packet.LegacyHandshake;
 import net.md_5.bungee.protocol.packet.LegacyPing;
 import net.md_5.bungee.protocol.packet.LoginRequest;
@@ -234,7 +245,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
 
                             unsafe.sendPacket(new StatusResponse(gson.toJson(element)));
                         } else {
-                            unsafe.sendPacket( new StatusResponse( gson.toJson( pingResult.getResponse() ) ) );
+                        unsafe.sendPacket( new StatusResponse( gson.toJson( pingResult.getResponse() ) ) );
                         }
                     }
                 };
@@ -314,6 +325,12 @@ public class InitialHandler extends PacketHandler implements PendingConnection
                 // Login
                 thisState = State.USERNAME;
                 ch.setProtocol( Protocol.LOGIN );
+
+                if ( !ProtocolConstants.SUPPORTED_VERSION_IDS.contains( handshake.getProtocolVersion() ) )
+                {
+                    disconnect( bungee.getTranslation( "outdated_server" ) );
+                    return;
+                }
 
                 if ( bungee.getJoinThrottle() != null && bungee.getJoinThrottle().throttle( getAddress().getAddress() ) )
                 {
@@ -570,7 +587,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
         if (!disconnecting.compareAndSet(false, true)) return;
         if ( !ch.isClosed() )
         {
-            if (thisState.isAllowKickPackets()) {
+            if (thisState != State.STATUS && thisState != State.PING) {
                 ch.close(new Kick(ComponentSerializer.toString(reason)));
             } else {
                 ch.close();

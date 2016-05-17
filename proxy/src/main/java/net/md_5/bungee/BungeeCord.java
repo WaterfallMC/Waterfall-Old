@@ -1,5 +1,27 @@
 package net.md_5.bungee;
 
+import com.google.common.base.Charsets;
+import com.google.common.base.Joiner;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.google.gson.GsonBuilder;
+import net.md_5.bungee.api.Favicon;
+import net.md_5.bungee.api.ServerPing;
+import net.md_5.bungee.api.Title;
+import net.md_5.bungee.api.chat.TranslatableComponent;
+import net.md_5.bungee.chat.TextComponentSerializer;
+import net.md_5.bungee.chat.TranslatableComponentSerializer;
+import net.md_5.bungee.module.ModuleManager;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.chat.ComponentSerializer;
+import net.md_5.bungee.log.BungeeLogger;
+import net.md_5.bungee.scheduler.BungeeScheduler;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.google.gson.Gson;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import jline.console.ConsoleReader;
 
@@ -48,6 +70,7 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.util.ResourceLeakDetector;
 
+import jline.console.ConsoleReader;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.Synchronized;
@@ -282,7 +305,6 @@ public class BungeeCord extends ProxyServer
         isRunning = true;
 
         pluginManager.enablePlugins();
-
 
         if ( config.getJoinThrottle() > 0 )
         {

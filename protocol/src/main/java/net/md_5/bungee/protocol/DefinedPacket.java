@@ -2,6 +2,7 @@ package net.md_5.bungee.protocol;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
+
 import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +15,10 @@ public abstract class DefinedPacket
 {
     public static void writeString(String s, ByteBuf buf)
     {
-        Preconditions.checkArgument( s.length() <= Short.MAX_VALUE, "Cannot send string longer than Short.MAX_VALUE (got %s characters)", s.length() );
+        if ( s.length() > Short.MAX_VALUE )
+        {
+            throw new OverflowPacketException( String.format( "Cannot send string longer than Short.MAX_VALUE (got %s characters)", s.length() ) );
+        }
 
         byte[] b = s.getBytes( Charsets.UTF_8 );
         writeVarInt( b.length, buf );
@@ -24,7 +28,10 @@ public abstract class DefinedPacket
     public static String readString(ByteBuf buf)
     {
         int len = readVarInt( buf );
-        Preconditions.checkArgument( len <= Short.MAX_VALUE, "Cannot receive string longer than Short.MAX_VALUE (got %s characters)", len );
+        if ( len > Short.MAX_VALUE )
+        {
+            throw new OverflowPacketException( String.format( "Cannot receive string longer than Short.MAX_VALUE (got %s characters)", len ) );
+        }
 
         byte[] b = new byte[ len ];
         buf.readBytes( b );
@@ -64,7 +71,10 @@ public abstract class DefinedPacket
 
     public static void writeArray(byte[] b, ByteBuf buf)
     {
-        Preconditions.checkArgument( b.length <= Short.MAX_VALUE, "Cannot send byte array longer than Short.MAX_VALUE (got %s bytes)", b.length );
+        if ( b.length > Short.MAX_VALUE )
+        {
+            throw new OverflowPacketException( String.format( "Cannot send byte array longer than Short.MAX_VALUE (got %s bytes)", b.length ) );
+        }
         writeVarInt( b.length, buf );
         buf.writeBytes( b );
     }
@@ -77,7 +87,10 @@ public abstract class DefinedPacket
     public static byte[] readArray(ByteBuf buf, int limit)
     {
         int len = readVarInt( buf );
-        Preconditions.checkArgument( len <= limit, "Cannot receive byte array longer than %s (got %s bytes)", limit, len );
+        if ( len > limit )
+        {
+            throw new OverflowPacketException( String.format( "Cannot receive byte array longer than %s (got %s bytes)", limit, len ) );
+        }
         byte[] ret = new byte[ len ];
         buf.readBytes( ret );
         return ret;
@@ -95,7 +108,6 @@ public abstract class DefinedPacket
     public static List<String> readStringArray(ByteBuf buf)
     {
         int len = readVarInt( buf );
-
         List<String> ret = new ArrayList<>( len );
         for ( int i = 0; i < len; i++ )
         {

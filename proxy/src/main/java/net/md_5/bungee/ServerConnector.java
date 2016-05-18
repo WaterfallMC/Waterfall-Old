@@ -95,7 +95,10 @@ public class ServerConnector extends PacketHandler
         Handshake originalHandshake = user.getPendingConnection().getHandshake();
         Handshake copiedHandshake = new Handshake( originalHandshake.getProtocolVersion(), originalHandshake.getHost(), originalHandshake.getPort(), 2 );
 
-        if ( BungeeCord.getInstance().config.isIpForward() )
+        // Waterfall start - use per-server client detail forwarding
+        //if ( BungeeCord.getInstance().config.isIpForward() )
+        if ( this.target.shouldForwardClientDetails() )
+        // Waterfall end
         {
             String newHost = copiedHandshake.getHost() + "\00" + user.getAddress().getHostString() + "\00" + user.getUUID();
 
@@ -128,6 +131,12 @@ public class ServerConnector extends PacketHandler
             if (properties.length > 0) {
                 newHost += "\00" + BungeeCord.getInstance().gson.toJson(properties);
             }
+
+            // Waterfall start - If we have a shared secret, append it
+            if (this.target.getSharedSecret() != null) {
+                newHost += "\00" + this.target.getSharedSecret();
+            }
+            // Waterfall end
 
             copiedHandshake.setHost( newHost );
         } else if ( !user.getExtraDataInHandshake().isEmpty() )

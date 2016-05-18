@@ -49,6 +49,18 @@ public class BungeeServerInfo implements ServerInfo
     private final boolean restricted;
     @Getter
     private final Queue<DefinedPacket> packetQueue = new LinkedList<>();
+    // Waterfall start
+    @lombok.Setter
+    private boolean forwardClientDetails;
+    @Getter
+    @lombok.Setter
+    private String sharedSecret;
+
+    @Override
+    public boolean shouldForwardClientDetails() {
+        return this.forwardClientDetails;
+    }
+    // Waterfall end
 
     @Synchronized("players")
     public void addPlayer(ProxiedPlayer player)

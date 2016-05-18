@@ -80,4 +80,40 @@ public interface ServerInfo
      * @param callback the callback to call when the count has been retrieved.
      */
     void ping(Callback<ServerPing> callback);
+
+    // Waterfall start
+    /**
+     * Whether we should forward client details to this server.
+     *
+     * <p>By default, this value is the same as {@link net.md_5.bungee.api.ProxyConfig#isIpForward()}.</p>
+     *
+     * @return {@code true} if we should forward client details, {@code false} otherwise
+     */
+    boolean shouldForwardClientDetails();
+
+    /**
+     * Sets whether we should forward client details to this server.
+     *
+     * @param forwardClientDetails {@code true} if we should forward client details, {@code false} otherwise
+     */
+    void setForwardClientDetails(boolean forwardClientDetails);
+
+    /**
+     * Gets the shared secret.
+     *
+     * <p>May be null.</p>
+     *
+     * @return the shared secret
+     */
+    String getSharedSecret();
+
+    /**
+     * Sets the shared secret.
+     *
+     * <p>May be null.</p>
+     *
+     * @param sharedSecret the shared secret
+     */
+    void setSharedSecret(String sharedSecret);
+    // Waterfall end
 }

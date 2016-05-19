@@ -23,6 +23,7 @@ import net.md_5.bungee.scheduler.BungeeScheduler;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.gson.Gson;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import io.github.waterfallmc.waterfall.conf.WaterfallConfiguration;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelException;
@@ -98,7 +99,7 @@ public class BungeeCord extends ProxyServer
      * Configuration.
      */
     @Getter
-    public final Configuration config = new Configuration();
+    public final Configuration config = new WaterfallConfiguration();
     /**
      * Localization bundle.
      */

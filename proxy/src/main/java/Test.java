@@ -19,7 +19,7 @@ public class Test
     {
         BungeeCord bungee = new BungeeCord();
         ProxyServer.setInstance( bungee );
-        bungee.getLogger().info( "Enabled BungeeCord version " + bungee.getVersion() );
+        bungee.getLogger().info( "Enabled Waterfall version " + bungee.getVersion() );
         bungee.start();
 
         while ( bungee.isRunning )

@@ -275,14 +275,18 @@ public enum Protocol
             return protocol;
         }
 
-        public final DefinedPacket createPacket(int id, int version)
+        public boolean hasPacket(int i, boolean supportsForge) {
+            return supportsForge || i >= 0 && i <= MAX_PACKET_ID;
+        }
+
+        public final DefinedPacket createPacket(int id, int version, boolean supportsForge)
         {
             ProtocolData protocolData = getProtocolData( version );
             if (protocolData == null)
             {
                 throw new BadPacketException( "Unsupported protocol version" );
             }
-            if ( id > MAX_PACKET_ID )
+            if ( !hasPacket(id, supportsForge) )
             {
                 throw new BadPacketException( "Packet with id " + id + " outside of range " );
             }

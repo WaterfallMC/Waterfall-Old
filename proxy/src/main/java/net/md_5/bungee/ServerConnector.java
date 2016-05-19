@@ -29,7 +29,9 @@ import net.md_5.bungee.forge.ForgeUtils;
 import net.md_5.bungee.netty.ChannelWrapper;
 import net.md_5.bungee.netty.HandlerBoss;
 import net.md_5.bungee.netty.PacketHandler;
+import net.md_5.bungee.netty.PipelineUtils;
 import net.md_5.bungee.protocol.DefinedPacket;
+import net.md_5.bungee.protocol.MinecraftDecoder;
 import net.md_5.bungee.protocol.Protocol;
 import net.md_5.bungee.protocol.packet.BossBar;
 import net.md_5.bungee.protocol.packet.EncryptionRequest;
@@ -183,6 +185,12 @@ public class ServerConnector extends PacketHandler
 
         ServerConnection server = new ServerConnection( ch, target );
         ServerConnectedEvent event = new ServerConnectedEvent( user, server );
+
+        if (server.isForgeServer() && user.isForgeUser()) {
+            ((MinecraftDecoder) server.getCh().getHandle().pipeline().get(PipelineUtils.PACKET_DECODER)).setSupportsForge(true);
+            ((MinecraftDecoder) user.getCh().getHandle().pipeline().get(PipelineUtils.PACKET_DECODER)).setSupportsForge(true);
+        }
+
         bungee.getPluginManager().callEvent( event );
 
         ch.write( BungeeCord.getInstance().registerChannels() );

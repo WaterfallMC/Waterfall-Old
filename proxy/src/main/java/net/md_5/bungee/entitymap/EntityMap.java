@@ -103,6 +103,12 @@ public abstract class EntityMap
         int packetId = DefinedPacket.readVarInt( packet );
         int packetIdLength = packet.readerIndex() - readerIndex;
 
+        if (packetId < 0 || packetId > ints.length || packetId > varints.length) { // Invalid packet id
+            // Ignore these invalid packets for compatibility reasons
+            packet.readerIndex( readerIndex );
+            return;
+        }
+
         if ( ints[packetId] )
         {
             rewriteInt( packet, oldId, newId, readerIndex + packetIdLength );

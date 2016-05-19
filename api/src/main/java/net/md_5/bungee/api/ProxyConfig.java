@@ -84,4 +84,8 @@ public interface ProxyConfig
     // Waterfall Options
     //
 
+    /**
+     * If metrics is enabled
+     */
+    boolean isMetrics();
 }

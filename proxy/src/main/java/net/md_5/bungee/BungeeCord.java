@@ -23,6 +23,7 @@ import net.md_5.bungee.scheduler.BungeeScheduler;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.gson.Gson;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import io.github.waterfallmc.waterfall.Metrics;
 import io.github.waterfallmc.waterfall.conf.WaterfallConfiguration;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -284,7 +285,9 @@ public class BungeeCord extends ProxyServer
                 }
             }
         }, 0, TimeUnit.MINUTES.toMillis( 5 ) );
-        metricsThread.scheduleAtFixedRate( new Metrics(), 0, TimeUnit.MINUTES.toMillis( Metrics.PING_INTERVAL ) );
+        if (config.isMetrics()) {
+            metricsThread.scheduleAtFixedRate( new Metrics(), 0, TimeUnit.MINUTES.toMillis( Metrics.PING_INTERVAL ) );
+        }
     }
 
     public void startListeners()

@@ -4,19 +4,19 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>net.md-5</groupId>
-        <artifactId>bungeecord-parent</artifactId>
+        <groupId>io.github.waterfallmc</groupId>
+        <artifactId>waterfall-parent</artifactId>
         <version>1.9-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>net.md-5</groupId>
-    <artifactId>bungeecord-native</artifactId>
+    <groupId>io.github.waterfallmc</groupId>
+    <artifactId>waterfall-native</artifactId>
     <version>1.9-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>BungeeCord-Native</name>
-    <description>Optional native code to speed up and enhance BungeeCord functionality.</description>
+    <name>Waterfall-Native</name>
+    <description>Optional native code to speed up and enhance Waterfall functionality.</description>
 
     <dependencies>
         <dependency>

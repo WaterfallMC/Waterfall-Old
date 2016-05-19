@@ -4,17 +4,17 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>net.md-5</groupId>
-        <artifactId>bungeecord-parent</artifactId>
+        <groupId>io.github.waterfallmc</groupId>
+        <artifactId>waterfall-parent</artifactId>
         <version>1.9-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>net.md-5</groupId>
-    <artifactId>bungeecord-event</artifactId>
+    <groupId>io.github.waterfallmc</groupId>
+    <artifactId>waterfall-event</artifactId>
     <version>1.9-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>BungeeCord-Event</name>
-    <description>Generic java event dispatching API intended for use with BungeeCord</description>
+    <name>Waterfall-Event</name>
+    <description>Generic java event dispatching API intended for use with Waterfall.</description>
 </project>

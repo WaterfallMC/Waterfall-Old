@@ -4,18 +4,18 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>net.md-5</groupId>
-        <artifactId>bungeecord-parent</artifactId>
+        <groupId>io.github.waterfallmc</groupId>
+        <artifactId>waterfall-parent</artifactId>
         <version>1.9-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>net.md-5</groupId>
-    <artifactId>bungeecord-proxy</artifactId>
+    <groupId>io.github.waterfallmc</groupId>
+    <artifactId>waterfall-proxy</artifactId>
     <version>1.9-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>BungeeCord-Proxy</name>
+    <name>Waterfall-Proxy</name>
     <description>Proxy component of the Elastic Portal Suite</description>
 
     <dependencies>
@@ -39,26 +39,26 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>net.md-5</groupId>
-            <artifactId>bungeecord-api</artifactId>
+            <groupId>io.github.waterfallmc</groupId>
+            <artifactId>waterfall-api</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>net.md-5</groupId>
-            <artifactId>bungeecord-native</artifactId>
+            <groupId>io.github.waterfallmc</groupId>
+            <artifactId>waterfall-native</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>net.md-5</groupId>
-            <artifactId>bungeecord-protocol</artifactId>
+            <groupId>io.github.waterfallmc</groupId>
+            <artifactId>waterfall-protocol</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>net.md-5</groupId>
-            <artifactId>bungeecord-query</artifactId>
+            <groupId>io.github.waterfallmc</groupId>
+            <artifactId>waterfall-query</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>

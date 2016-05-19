@@ -4,19 +4,19 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>net.md-5</groupId>
-        <artifactId>bungeecord-parent</artifactId>
+        <groupId>io.github.waterfallmc</groupId>
+        <artifactId>waterfall-parent</artifactId>
         <version>1.9-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>net.md-5</groupId>
-    <artifactId>bungeecord-query</artifactId>
+    <groupId>io.github.waterfallmc</groupId>
+    <artifactId>waterfall-query</artifactId>
     <version>1.9-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>BungeeCord-Query</name>
-    <description>Minecraft query implementation based on the BungeeCord API.</description>
+    <name>Waterfall-Query</name>
+    <description>Minecraft query implementation based on the Waterfall API.</description>
 
     <dependencies>
         <dependency>
@@ -26,8 +26,8 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>net.md-5</groupId>
-            <artifactId>bungeecord-api</artifactId>
+            <groupId>io.github.waterfallmc</groupId>
+            <artifactId>waterfall-api</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>

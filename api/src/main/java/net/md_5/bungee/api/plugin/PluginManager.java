@@ -42,7 +42,6 @@ import org.yaml.snakeyaml.introspector.PropertyUtils;
 public class PluginManager
 {
 
-    private static final Pattern argsSplit = Pattern.compile( " " );
     /*========================================================================*/
     private final ProxyServer proxy;
     /*========================================================================*/
@@ -126,7 +125,7 @@ public class PluginManager
      */
     public boolean dispatchCommand(CommandSender sender, String commandLine, List<String> tabResults)
     {
-        String[] split = argsSplit.split( commandLine, -1 );
+        String[] split = commandLine.split(" ", -1);
         // Check for chat that only contains " "
         if ( split.length == 0 )
         {
